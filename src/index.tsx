@@ -1,49 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Map } from 'typescript';
 import './index.css';
 
-
-function checkIfExists(graph: number[][][], val: number[]) {
-  var found = false;
-  graph.map(entry => (
-    entry.map(item => {
-      if (found) return;
-      if (item.toString() === val.toString()) found = true;
-    })
-  ))
-  return found;
+function alreadyDiscovered(discovered: number[][], nodeToCheck: number[]): boolean {
+  for (var i = 0; i < discovered.length; i++) {
+    if (discovered[i].toString() === nodeToCheck.toString()) return true;
+  }
+  return false;
 }
 
-const [graphTest, setGraphTest] = useState<number[][][]>([]);
-
-function BFS(graph: number[][][], currentNode: number[], targetNode: number[], depth: number) {
-  if (checkIfExists(graphTest, targetNode)) return;
-  
-  setGraphTest(graph => [...graph, [currentNode]]);
-  
-  return new Map([])
-
+//Graph should initially start with first selected node
+function BFS(graph: number[][][], currentNodes: number[][], targetNode: number[],
+             discovered: number[][], found: boolean): number[][][] {    
+  if (found) return graph;
+  const directions: number[][] = [[1,0],[0,1],[-1,0],[0,-1]];
+  var nextNodes: number[][] = [];
+  graph.push([[]]);
+  var depth = graph.length - 1;
+  for (var i = 0; i < currentNodes.length; i++) { // something wrong with i < currentNodes.length
+    if (alreadyDiscovered(discovered, currentNodes[i])) continue;
+    if (i === 0) {
+      graph[depth][0] = currentNodes[i];
+    } else {
+      graph[depth].push(currentNodes[i]);
+    }
+    discovered.push(currentNodes[i]);
+    for (var j = 0; j < directions.length; j++) {
+      nextNodes.push([currentNodes[i][0] + directions[j][0], currentNodes[i][1] + directions[j][1]]);
+    }
+    if (!found && currentNodes[i].toString() === targetNode.toString()) found = true;
+  }
+  return BFS(graph, nextNodes, targetNode, discovered, found);
 }
-
-
 
 function App() {
 
   //Variables
   var pos: number[][][] = [];
-  var data = [
-    [[0,0]],
-    [[0,1],[1,0],[1,1]],
-    [[0,2],[2,0],[1,2],[2,1],[2,2]],
-  ];
 
-  //Multiply each node by 20 to position it correctly
-  data = data.map(entry => (
-    entry.map(elem => (
-      elem.map(e => e*20)
-    ))
-  ))
   const [positions, setPositions] = useState<number[][][]>([]);
   const [state, setState] = useState(false);
 
@@ -51,7 +45,7 @@ function App() {
   const Node = () => {
     return (
       <div>
-          {state === true ? (positions.map(entry => (
+          {positions.map(entry => (
             entry.map(elem => (
               <div style={{
                 position: "absolute",
@@ -66,10 +60,19 @@ function App() {
                 display: "inline-block",
               }}/>
             ))
-          ))) : null}
+          ))}
       </div>
     )
   }
+  
+  var data: number[][][] = BFS([], [[3,3]], [5,5], [], false);
+
+  //Multiply each node by 20 to position it correctly
+  data = data.map(entry => (
+    entry.map(elem => (
+      elem.map(e => e*20)
+    ))
+  ))
 
   //Delaying render of nodes
   useEffect(() => {
@@ -87,7 +90,7 @@ function App() {
     if (i > 0) {
       setState(true);
     }
-    
+
     //Fill data to render
     pos[i] = data[i];
     setPositions(pos);
