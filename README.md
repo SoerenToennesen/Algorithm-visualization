@@ -9,6 +9,10 @@ Additional requirements include weighted nodes and walls.
 
 Finally, some multi-agent system pathfinding would also be interesting, but might require a separate (micro) service to encapsualte such an AI.
 
+## Motivation
+
+I am a huge fan of data structures and algorithms - in particular in complex settings such as MAS or distributed systems, in addition to learning by visualization and implementation. Therefore, this project serves the purpose of helping me understand selected algorithms, showcase them in a fun and immersive setting, where a bunch of different states are present and has to happen in parallel or sequentially.
+
 ## Examples
 
 The current project is deployed here on GitHub on the following link:
