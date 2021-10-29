@@ -11,7 +11,7 @@ Finally, some multi-agent system pathfinding would also be interesting, but migh
 
 ## Examples
 
-The current project is deplyed here on GitHub on the following link:
+The current project is deployed here on GitHub on the following link:
 
 https://soerentoennesen.github.io/Algorithm-visualization/
 
