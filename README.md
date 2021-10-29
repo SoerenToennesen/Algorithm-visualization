@@ -1,5 +1,9 @@
 # Algorithm-visualization
-Interactive algorithm visualization on a website 
+Interactive algorithm visualization on a website.
+
+The current project is deployed here on GitHub on the following link:
+
+https://soerentoennesen.github.io/Algorithm-visualization/
 
 ## Features
 
@@ -15,9 +19,7 @@ I am a huge fan of data structures and algorithms - in particular in complex set
 
 ## Examples
 
-The current project is deployed here on GitHub on the following link:
 
-https://soerentoennesen.github.io/Algorithm-visualization/
 
 ### Below, the BFS search is shown:
 
