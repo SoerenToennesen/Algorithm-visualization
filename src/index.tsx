@@ -3,7 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'font-awesome/css/font-awesome.min.css';
 
-import {BFS, getFullDataSearch} from './SearchAlgorithms/BFS';
+import {BFS} from './SearchAlgorithms/BFS';
+import {DFS} from './SearchAlgorithms/DFS';
+import {GBFS} from './SearchAlgorithms/GBFS';
+import {AStar} from './SearchAlgorithms/AStar';
+import {getFullDataSearch} from './SearchAlgorithms/components/helperfunctions';
 
 
 
@@ -16,50 +20,76 @@ function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: b
         {dropdownPicked && !startSelected ? 
         <div className="legend-info">
           <div className="legend-color1"><i className='fas fa-square'/></div>
-             Select start node
+            &nbsp;Select start node
         </div>
         : null}
         {startSelected ? 
         <div className="legend-info">
           <div className="legend-color1"><i className='fas fa-square'/></div>
-            Start node
+            &nbsp;Start node
         </div>
         : null}
         {startSelected && !goalSelected ? 
         (colorOfRange === 0 ? 
         <div className="legend-info">
           <div className="legend-color2"><i className='fas fa-square'/></div>
-          Select goal node (green light)
+            &nbsp;Select goal node (green light)
         </div> 
         : (colorOfRange === 1 ? 
         <div className="legend-info">
           <div className="legend-color3"><i className='fas fa-square'/></div>
-            Select goal node (computationally hard)
+            &nbsp;Select goal node (computationally hard)
         </div> 
         : 
         <div className="legend-info">
           <div className="legend-color4"><i className='fas fa-square'/></div>
-            Select goal node (restricted)
+            &nbsp;Select goal node (restricted)
         </div>))
         : null}
         {goalSelected ? 
         <div className="legend-info">
           <div className={goalColor === 0 ? "legend-color2" : (goalColor === 1 ? "legend-color3" : "legend-color4")}><i className='fas fa-square'/></div>
-            Goal node
+            &nbsp;Goal node
         </div>
         : null}
         {goalSelected ? 
         <div className="legend-info">
           <div className="legend-color5"><i className='fas fa-square'/></div>
-            Search
+            &nbsp;Search
         </div>
         : null}
         {goalSelected ? 
         <div className="legend-info">
           <div className="legend-color6"><i className='fas fa-square'/></div>
-            Path found
+            &nbsp;Path found
         </div>
         : null}
+      </div>
+  )
+}
+
+function todo() {
+  return (
+      <div className="todo-container">
+        <div className="todo-title">
+          Todo list
+        </div>
+        <div className="todo-info">
+          <i className='fas fa-check'/>
+            &nbsp;Implement drawable walls
+        </div>
+        <div className="todo-info">
+          <i className='fas fa-check'/>
+            &nbsp;Implement weighted nodes
+        </div>
+        <div className="todo-info">
+          <i className='fas fa-check'/>
+            &nbsp;Implement swarm algorithm
+        </div>
+        <div className="todo-info">
+          <i className='fas fa-check'/>
+            &nbsp;Implement data structures
+        </div>
       </div>
   )
 }
@@ -171,6 +201,26 @@ function drawPath(positions: number[][], isFade: boolean) {
   );
 }
 
+function drawWalls(walls: number[][], isFade: boolean) {
+  return (
+    walls.map(entry => (
+      <div style={{
+        position: "absolute",
+        height: "20px",
+        width: "20px",
+        marginLeft: `${entry[0] * 20}px`,
+        marginTop: `${entry[1] * 20}px`,
+        top: "0px",
+        left: "0px",
+        backgroundColor: "rgb(146, 95, 0)",
+        display: "inline-block",
+        animation: isFade ? "fadeMe 1s" : "",
+        zIndex: -0.8,
+      }}/>
+    ))
+  );
+}
+
 
 function App() {
 
@@ -191,6 +241,11 @@ function App() {
   const [drawn, setDrawn] = useState(false);
   const [colorOfRange, setColorOfRange] = useState(0);
   const [goalColor, setGoalColor] = useState(0);
+  const [drawingDone, setDrawingDone] = useState(true);
+  const [walls, setWalls] = useState<number[][]>([]);
+  const [algoSelected, setAlgoSelected] = useState(false);
+  const [algoSelectedOption, setAlgoSelectedOption] = useState("Select nodes");
+
 
   const [click, setClick] = useState(false);
   const [dropdownAlgorithms, setDropdownAlgorithms] = useState(false);
@@ -257,15 +312,30 @@ function App() {
       var range: number = Math.abs(Math.floor(e.clientX / 20) - start[0]) + 
                           Math.abs(Math.floor(e.clientY / 20) - start[1]);
       if (e.clientY >= 80) {
-        if (range < 10) setColorOfRange(0);
-        if (range >= 10 && range < 18) setColorOfRange(1);
-        if (range >= 18) setColorOfRange(2);
+        if (algoOrDatastruct === "BFS algorithm selected") {
+          if (range < 10) setColorOfRange(0);
+          if (range >= 10 && range < 18) setColorOfRange(1);
+          if (range >= 18) setColorOfRange(2);
+        } else if (algoOrDatastruct === "DFS algorithm selected") {
+          setColorOfRange(0);
+        } else if (algoOrDatastruct === "GBFS algorithm selected") {
+          setColorOfRange(0);
+        } else if (algoOrDatastruct === "A* algorithm selected") {
+          setColorOfRange(0);
+        }
+        
         setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
       };
     }
   }
 
   //Phase controller
+  if (algoSelectedOption === "Add walls") {
+    if (walls.toString() === [].toString()) {
+      var walls_temp: number[][] = [[50,45],[50,46],[50,47],[50,48],[50,49],[50,50],[50,51]];
+      setWalls(walls_temp);
+    }
+  }
   if (!dropdownPicked) {
     if (phase !== 0) {
       setPhase(0);
@@ -277,19 +347,48 @@ function App() {
   } else if (goalSelected && !pathFound) {
     if (phase !== 2) {
       if (fullSearchData.length === 0 || path.length === 0) {
-        var fullDataSearchTemp: number[][][] = BFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false);
-        setFullSearchData(fullDataSearchTemp);
-        var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
-        pathTemp = pathTemp.reverse();
-        setPath(pathTemp);
-        setPathFound(true);
-        setPhase(3);
+        const minWidth: number = -1;
+        const maxWidth: number = Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1;
+        const minHeight: number = Math.floor(80 / 20) - 1;
+        const maxHeight: number = Math.floor((Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 19.99) / 20) + 1;
+        if (algoOrDatastruct === "BFS algorithm selected") {
+          var fullDataSearchTemp: number[][][] = BFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          setFullSearchData(fullDataSearchTemp);
+          var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
+          pathTemp = pathTemp.reverse();
+          setPath(pathTemp);
+          setPathFound(true);
+          setPhase(3);
+        } else if (algoOrDatastruct === "DFS algorithm selected") {
+          var fullDataSearchTemp: number[][][] = DFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          setFullSearchData(fullDataSearchTemp);
+          var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
+          pathTemp = pathTemp.reverse();
+          setPath(pathTemp);
+          setPathFound(true);
+          setPhase(3);
+        } else if (algoOrDatastruct === "GBFS algorithm selected") {
+          var fullDataSearchTemp: number[][][] = GBFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          setFullSearchData(fullDataSearchTemp);
+          var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
+          pathTemp = pathTemp.reverse();
+          setPath(pathTemp);
+          setPathFound(true);
+          setPhase(3);
+        } else if (algoOrDatastruct === "A* algorithm selected") {
+          var fullDataSearchTemp: number[][][] = AStar([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          setFullSearchData(fullDataSearchTemp);
+          var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
+          pathTemp = pathTemp.reverse();
+          setPath(pathTemp);
+          setPathFound(true);
+          setPhase(3);
+        }
       }
       setPhase(2);
     }
   } else if (pathFound && !drawn) {
     if (phase !== 3) {
-
       setPhase(3);
     }
   } else if (drawn) {
@@ -307,10 +406,11 @@ function App() {
   var k = 0;
   useEffect(() => {
     if (pathFound) {
+      setDrawingDone(false);
       const interval = setInterval(() => {
         if (i === fullSearchData.length) {
           if (k === path.length) {
-            //setDrawn(true);
+            setDrawingDone(true);
             clearInterval(interval);
             return;
           } else {
@@ -339,7 +439,7 @@ function App() {
           setPositions(pos);
           i++;
         }
-      }, 100);
+      }, 2000 / fullSearchData.length);
     }
   }, [pathFound]);
 
@@ -347,6 +447,26 @@ function App() {
     setPhase(-1);
     setDropdownPicked(false);
     setAlgoOrDatastruct("Nothing selected");
+    setAlgoSelected(false);
+    setStartSelected(false);
+    setGoalSelected(false);
+    setStart([]);
+    setGoal([]);
+    setFullSearchData([]);
+    setPositions([]);
+    setPositionsPath([]);
+    setAlreadyDrawn([]);
+    setAlreadyDrawnPath([]);
+    setPath([]);
+    setPathFound(false);
+    setDrawn(false);
+    setColorOfRange(0);
+    setAlgoSelectedOption("Select nodes");
+    setWalls([]);
+  }
+
+  function partialReset() {
+    setPhase(1);
     setStartSelected(false);
     setGoalSelected(false);
     setStart([]);
@@ -362,9 +482,11 @@ function App() {
     setColorOfRange(0);
   }
 
+
   //Main render
   return (
     <div className="body">
+      <div className="walls"></div>
       <nav className="navbar">
           <a className='navbar-logo'>
               DSA visuals <i className='fas fa-project-diagram'/>
@@ -376,6 +498,19 @@ function App() {
               <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>
+              {algoSelected ?
+              <li className='nav-item'>
+                      <a className={drawingDone ? (algoSelectedOption !== "Select nodes" ? 'nav-links' : 'nav-li-unclickable') : "nav-li-unclick-2"} onClick={drawingDone ? function() {setClick(false); setAlgoSelectedOption("Select nodes"); } : function() {}}>
+                          Select nodes
+                      </a>
+                      <a className={drawingDone ? (algoSelectedOption !== "Add walls" ? 'nav-links' : 'nav-li-unclickable') : "nav-li-unclick-2"} onClick={drawingDone ? function() {setClick(false); setAlgoSelectedOption("Add walls"); } : function() {}}>
+                          Add walls
+                      </a>
+                      <a className={drawingDone ? (algoSelectedOption !== "Add weights" ? 'nav-links' : 'nav-li-unclickable') : "nav-li-unclick-2"} onClick={drawingDone ? function() {setClick(false); setAlgoSelectedOption("Add weights"); } : function() {}}>
+                          Add weights
+                      </a>
+              </li>
+              : null}
               <li className='nav-item' onMouseEnter={onMouseEnterDropdownAlgorithms} onMouseLeave={onMouseLeaveDropdownAlgorithms}>
                   <a className='nav-links' onClick={() => setClick(false)}>
                       Algorithms <i className='fas fa-caret-down' />
@@ -383,8 +518,23 @@ function App() {
                   {dropdownAlgorithms && 
                   <ul className={clickAlgo ? 'dropdown-menu clicked' : 'dropdown-menu'}>
                       <li>
-                          <a className="dropdown-link" onClick={function() {setAlgoOrDatastruct("BFS algorithm selected"); setDropdownPicked(true);}}>
+                          <a className="dropdown-link" onClick={function() {setAlgoOrDatastruct("BFS algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Breadth-First Search
+                          </a>
+                      </li>
+                      <li>
+                          <a className="dropdown-link" onClick={function() {setAlgoOrDatastruct("DFS algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                              Depth-First Search
+                          </a>
+                      </li>
+                      <li>
+                          <a className="dropdown-link" onClick={function() {setAlgoOrDatastruct("GBFS algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                              Greedy Best-First Search
+                          </a>
+                      </li>
+                      <li>
+                          <a className="dropdown-link" onClick={function() {setAlgoOrDatastruct("A* algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                              A* Search
                           </a>
                       </li>
                   </ul>
@@ -411,13 +561,15 @@ function App() {
               </li>
           </ul>
           <a>
-              <button className='btn' onClick={function() {setClick(false); reset(); }}>
+              <button className={drawingDone ? 'btn' : 'bt-done'} onClick={drawingDone ? function() {setClick(false); reset(); } : function() {}}>
                   Reset
               </button>
            </a>
       </nav>
       {footer(dropdownPicked, startSelected, goalSelected, start, goal)}
+      {todo()}
       {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor)}
+      {drawWalls(walls, true)}
       {phase === 1 ? pickTargets(hoverBox, startSelected, colorOfRange) : null}
       {startSelected ? drawStartAndGoal(start, false, 0) : null}
       {goalSelected ? drawStartAndGoal(goal, true, goalColor) : null}
@@ -428,11 +580,6 @@ function App() {
     </div>
   );
 }
-
-//TODO:
-// - make a legend displaying the meaning of different nodes and whatnot
-// - make it so you cant select a goal too far from start node, by rendering green/red/orange on the hoverbox
-// - make startNode and goalNode stick with different colour
 
 //Boilerplate react render code
 ReactDOM.render(
