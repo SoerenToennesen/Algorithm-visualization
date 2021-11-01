@@ -435,12 +435,7 @@ function App() {
       };
     }
   }
-
-  //Phase controller
-    /*if (walls.toString() === [].toString()) {
-      var walls_temp: number[][] = [[50,45],[50,46],[50,47],[50,48],[50,49],[50,50],[50,51]];
-      setWalls(walls_temp);
-    }*/
+  
   if (!dropdownPicked) {
     if (phase !== 0) {
       setPhase(0);
