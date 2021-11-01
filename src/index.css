@@ -333,6 +333,14 @@
   white-space: nowrap;
 }
 
+.legend-colorm1 {
+  color: rgb(146, 95, 0);
+  display: inline;
+}
+.legend-color0 {
+  color: rgb(68, 0, 179);
+  display: inline;
+}
 .legend-color1 {
   color: rgb(65,126,238);
   display: inline;

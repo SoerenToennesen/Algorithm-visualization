@@ -11,13 +11,25 @@ import {getFullDataSearch} from './SearchAlgorithms/components/helperfunctions';
 
 
 
-function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: boolean, colorOfRange: number, goalColor: number) {
+function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: boolean, colorOfRange: number, goalColor: number, algoSelectedOption: string) {
   return (
       <div className="legend-container">
         <div className="legend-title">
           Legend
         </div>
-        {dropdownPicked && !startSelected ? 
+        {dropdownPicked && algoSelectedOption === "Add walls" ? 
+        <div className="legend-info">
+          <div className="legend-colorm1"><i className='fas fa-square'/></div>
+            &nbsp;Add walls
+        </div>
+        : null}
+        {dropdownPicked && algoSelectedOption === "Add weights" ? 
+        <div className="legend-info">
+          <div className="legend-color0"><i className='fas fa-square'/></div>
+            &nbsp;Add weights
+        </div>
+        : null}
+        {dropdownPicked && algoSelectedOption === "Select nodes" && !startSelected ? 
         <div className="legend-info">
           <div className="legend-color1"><i className='fas fa-square'/></div>
             &nbsp;Select start node
@@ -29,7 +41,7 @@ function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: b
             &nbsp;Start node
         </div>
         : null}
-        {startSelected && !goalSelected ? 
+        {startSelected && algoSelectedOption === "Select nodes" && !goalSelected ? 
         (colorOfRange === 0 ? 
         <div className="legend-info">
           <div className="legend-color2"><i className='fas fa-square'/></div>
@@ -73,14 +85,6 @@ function todo() {
       <div className="todo-container">
         <div className="todo-title">
           Todo list
-        </div>
-        <div className="todo-info">
-          <i className='fas fa-check'/>
-            &nbsp;Implement drawable walls
-        </div>
-        <div className="todo-info">
-          <i className='fas fa-check'/>
-            &nbsp;Implement weighted nodes
         </div>
         <div className="todo-info">
           <i className='fas fa-check'/>
@@ -315,26 +319,28 @@ function App() {
       if (e.clientY >= 80) {
         setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
         onmousedown = function(e2) {
-          var add: boolean = true;
-          var walls_temp = walls;
-          for (var i = 0; i < walls_temp.length; i++) {
-            if (walls_temp[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
-              add = false;
-              break;
-            }
-          }
-          if (add) {
-            var weights_temp: number[][] = [];
-            for (var i = 0; i < weights.length; i++) {
-              if ([weights[i][0], weights[i][1]].toString() !== [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
-                weights_temp.push(weights[i]);
+          if (e2.clientY >= 80) {
+            var add: boolean = true;
+            var walls_temp = walls;
+            for (var i = 0; i < walls_temp.length; i++) {
+              if (walls_temp[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                add = false;
+                break;
               }
             }
-            setWeights(weights_temp);
-          }
-          if (add) {
-            walls_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)]);
-            setWalls(walls_temp);
+            if (add) {
+              var weights_temp: number[][] = [];
+              for (var i = 0; i < weights.length; i++) {
+                if ([weights[i][0], weights[i][1]].toString() !== [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                  weights_temp.push(weights[i]);
+                }
+              }
+              setWeights(weights_temp);
+            }
+            if (add) {
+              walls_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)]);
+              setWalls(walls_temp);
+            }
           }
         }
       };
@@ -350,26 +356,28 @@ function App() {
       if (e.clientY >= 80) {
         setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
         onmousedown = function(e2) {
-          var add: boolean = true;
-          var weights_temp = weights;
-          for (var i = 0; i < weights_temp.length; i++) {
-            if ([weights[i][0], weights[i][1]].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
-              add = false;
-              weights_temp[i][2] = weights_temp[i][2] === 1 ? 0.2 : weights_temp[i][2] + 0.2;
-              break;
-            }
-          }
-          if (add) {
-            for (var i = 0; i < walls.length; i++) {
-              if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+          if (e2.clientY >= 80) {
+            var add: boolean = true;
+            var weights_temp = weights;
+            for (var i = 0; i < weights_temp.length; i++) {
+              if ([weights[i][0], weights[i][1]].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
                 add = false;
+                weights_temp[i][2] = weights_temp[i][2] === 1 ? 0.2 : weights_temp[i][2] + 0.2;
                 break;
               }
             }
-          }
-          if (add) {
-            weights_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20), 0.2]);
-            setWeights(weights_temp);
+            if (add) {
+              for (var i = 0; i < walls.length; i++) {
+                if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                  add = false;
+                  break;
+                }
+              }
+            }
+            if (add) {
+              weights_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20), 0.2]);
+              setWeights(weights_temp);
+            }
           }
         }
       };
@@ -668,7 +676,7 @@ function App() {
       </nav>
       {footer(dropdownPicked, startSelected, goalSelected, start, goal)}
       {/*{todo()}*/}
-      {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor)}
+      {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption)}
       {drawWalls(walls, true)}
       {drawWeights(weights, true)}
       {phase === 1 ? pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption) : null}
