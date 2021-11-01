@@ -118,7 +118,7 @@ function footer(dropdownPicked: boolean, startSelected: boolean, goalSelected: b
 }
 
 
-function pickTargets(hoverBox: number[], startSelected: boolean, colorOfRange: number) {
+function pickTargets(hoverBox: number[], startSelected: boolean, colorOfRange: number, algoSelectedOption: string) {
   return (
     <div
       style={{
@@ -129,7 +129,7 @@ function pickTargets(hoverBox: number[], startSelected: boolean, colorOfRange: n
         marginLeft: `${hoverBox[1]}px`,
         top: "3px",
         left: "3px",
-        backgroundColor: startSelected ? (colorOfRange === 0 ? "rgb(49, 158, 63, 0.5)" : ( colorOfRange === 1 ? "rgb(211, 221, 63, 0.5)" : "rgb(221, 63, 63, 0.5)" ) ) : "rgb(65,126,238, 0.5)",
+        backgroundColor: algoSelectedOption === "Select nodes" ? (startSelected ? (colorOfRange === 0 ? "rgb(49, 158, 63, 0.5)" : ( colorOfRange === 1 ? "rgb(211, 221, 63, 0.5)" : "rgb(221, 63, 63, 0.5)" ) ) : "rgb(65,126,238, 0.5)") : (algoSelectedOption === "Add walls" ? "rgb(146, 95, 0, 0.5)" : "rgb(68, 0, 179, 0.5)"),
         borderRadius: "35%",
         display: "inline-block",
         zIndex: -1,
@@ -221,6 +221,26 @@ function drawWalls(walls: number[][], isFade: boolean) {
   );
 }
 
+function drawWeights(weights: number[][], isFade: boolean) {
+  return (
+    weights.map(entry => (
+      <div style={{
+        position: "absolute",
+        height: "20px",
+        width: "20px",
+        marginLeft: `${entry[0] * 20}px`,
+        marginTop: `${entry[1] * 20}px`,
+        top: "0px",
+        left: "0px",
+        backgroundColor: `rgb(68, 0, 179, ${entry[2]})`,
+        display: "inline-block",
+        animation: isFade ? "fadeMe 1s" : "",
+        zIndex: -0.8,
+      }}/>
+    ))
+  );
+}
+
 
 function App() {
 
@@ -243,6 +263,7 @@ function App() {
   const [goalColor, setGoalColor] = useState(0);
   const [drawingDone, setDrawingDone] = useState(true);
   const [walls, setWalls] = useState<number[][]>([]);
+  const [weights, setWeights] = useState<number[][]>([]);
   const [algoSelected, setAlgoSelected] = useState(false);
   const [algoSelectedOption, setAlgoSelectedOption] = useState("Select nodes");
 
@@ -284,10 +305,85 @@ function App() {
       }
   };
 
+
+  if (algoSelectedOption === "Add walls") {
+    onmousedown = function(e) {}
+    onmouseup = function(e) {}
+    onmousemove = function(e) {}
+
+    onmousemove = function(e) {
+      if (e.clientY >= 80) {
+        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
+        onmousedown = function(e2) {
+          var add: boolean = true;
+          var walls_temp = walls;
+          for (var i = 0; i < walls_temp.length; i++) {
+            if (walls_temp[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+              add = false;
+              break;
+            }
+          }
+          if (add) {
+            var weights_temp: number[][] = [];
+            for (var i = 0; i < weights.length; i++) {
+              if ([weights[i][0], weights[i][1]].toString() !== [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                weights_temp.push(weights[i]);
+              }
+            }
+            setWeights(weights_temp);
+          }
+          if (add) {
+            walls_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)]);
+            setWalls(walls_temp);
+          }
+        }
+      };
+    }
+  }
+
+  if (algoSelectedOption === "Add weights") {
+    onmousedown = function(e) {}
+    onmouseup = function(e) {}
+    onmousemove = function(e) {}
+
+    onmousemove = function(e) {
+      if (e.clientY >= 80) {
+        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
+        onmousedown = function(e2) {
+          var add: boolean = true;
+          var weights_temp = weights;
+          for (var i = 0; i < weights_temp.length; i++) {
+            if ([weights[i][0], weights[i][1]].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+              add = false;
+              weights_temp[i][2] = weights_temp[i][2] === 1 ? 0.2 : weights_temp[i][2] + 0.2;
+              break;
+            }
+          }
+          if (add) {
+            for (var i = 0; i < walls.length; i++) {
+              if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                add = false;
+                break;
+              }
+            }
+          }
+          if (add) {
+            weights_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20), 0.2]);
+            setWeights(weights_temp);
+          }
+        }
+      };
+    }
+  }
+
   //The mouse event listeners are actually still running, causing a lot of rerenders... Figure out a way to turn this off
-  if (dropdownPicked) {
+  if (dropdownPicked && algoSelectedOption === "Select nodes") {
     if (!startSelected || !goalSelected) {
+      onmousedown = function(e) {}
+      onmouseup = function(e) {}
+      onmousemove = function(e) {}
       onmouseup = function(e) {
+        if (algoSelectedOption !== "Select nodes") return;
         if (!startSelected && start.length === 0) {
           if (e.clientY >= 80) {
             setStart([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)])
@@ -307,7 +403,10 @@ function App() {
       }
     }
   }
-  if (!goalSelected && dropdownPicked) {
+
+  
+
+  if (!goalSelected && dropdownPicked && algoSelectedOption === "Select nodes") {
     onmousemove = function(e) {
       var range: number = Math.abs(Math.floor(e.clientX / 20) - start[0]) + 
                           Math.abs(Math.floor(e.clientY / 20) - start[1]);
@@ -324,18 +423,16 @@ function App() {
           setColorOfRange(0);
         }
         
-        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
+        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20]);
       };
     }
   }
 
   //Phase controller
-  if (algoSelectedOption === "Add walls") {
-    if (walls.toString() === [].toString()) {
+    /*if (walls.toString() === [].toString()) {
       var walls_temp: number[][] = [[50,45],[50,46],[50,47],[50,48],[50,49],[50,50],[50,51]];
       setWalls(walls_temp);
-    }
-  }
+    }*/
   if (!dropdownPicked) {
     if (phase !== 0) {
       setPhase(0);
@@ -345,6 +442,9 @@ function App() {
       setPhase(1);
     }
   } else if (goalSelected && !pathFound) {
+    onmousedown = function(e) {}
+    onmouseup = function(e) {}
+    onmousemove = function(e) {}
     if (phase !== 2) {
       if (fullSearchData.length === 0 || path.length === 0) {
         const minWidth: number = -1;
@@ -463,6 +563,7 @@ function App() {
     setColorOfRange(0);
     setAlgoSelectedOption("Select nodes");
     setWalls([]);
+    setWeights([]);
   }
 
   function partialReset() {
@@ -481,7 +582,6 @@ function App() {
     setDrawn(false);
     setColorOfRange(0);
   }
-
 
   //Main render
   return (
@@ -567,10 +667,11 @@ function App() {
            </a>
       </nav>
       {footer(dropdownPicked, startSelected, goalSelected, start, goal)}
-      {todo()}
+      {/*{todo()}*/}
       {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor)}
       {drawWalls(walls, true)}
-      {phase === 1 ? pickTargets(hoverBox, startSelected, colorOfRange) : null}
+      {drawWeights(weights, true)}
+      {phase === 1 ? pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption) : null}
       {startSelected ? drawStartAndGoal(start, false, 0) : null}
       {goalSelected ? drawStartAndGoal(goal, true, goalColor) : null}
       {phase === 3 ? drawSearch(positions, true) : null}

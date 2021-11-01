@@ -33,7 +33,6 @@ export function AStar(graph: number[][][], currentNodes: number[][], targetNode:
             var f: number = g + h;
             if (f < bestDirection[0]) bestDirection = [f, j];
         }
-        console.log(bestDirection);
         nextNodes.push([currentNodes[i][0] + directions[bestDirection[1]][0], currentNodes[i][1] + directions[bestDirection[1]][1], currentNodes[i][0], currentNodes[i][1]]);
         if (!found && (currentNodes[i][0] === targetNode[0] && currentNodes[i][1] === targetNode[1])) found = true;
     }
