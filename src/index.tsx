@@ -463,7 +463,7 @@ function App() {
           setPathFound(true);
           setPhase(3);
         } else if (algoOrDatastruct === "DFS algorithm selected") {
-          var fullDataSearchTemp: number[][][] = DFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], [], false, walls, weights, [minWidth, maxWidth, minHeight, maxHeight]);
+          var fullDataSearchTemp: number[][][] = DFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], [], false, walls, weights, [minWidth, maxWidth, minHeight, maxHeight], []);
           setFullSearchData(fullDataSearchTemp);
           var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
           pathTemp = pathTemp.reverse();

@@ -33,7 +33,7 @@ export function AStar(graph: number[][][], currentNodes: number[][], targetNode:
                 bestFinishedWaiting = [finishedWaiting[j][0], finishedWaiting[j][1], finishedWaiting[j][2], finishedWaiting[j][3]];
             };
         }
-        for (var j = 0; j < directions.length; j++) {
+        for (var j = 0; j < directions.length; j++) { // I could extend the "directions" with finishedwaiting, such saying for j in directions.length + 1 , and if we reach the last here, we do something only if finished waiting is a possibility
             if ((alreadyDiscovered(discovered, [currentNodes[i][0] + directions[j][0], currentNodes[i][1] + directions[j][1]])) ||
                 ((currentNodes[i][0] + directions[j][0] <= view[0] || currentNodes[i][0] + directions[j][0] >= view[1]) || 
                 (currentNodes[i][1] + directions[j][1] <= view[2] || currentNodes[i][1] + directions[j][1] >= view[3]))) { // out of bounds, think of it as walls
