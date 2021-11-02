@@ -17,7 +17,7 @@ Finally, some multi-agent system pathfinding would also be interesting, but migh
 
 I am a huge fan of data structures and algorithms - in particular in complex settings such as MAS or distributed systems, in addition to learning by visualization and implementation. Therefore, this project serves the purpose of helping me understand selected algorithms, showcase them in a fun and immersive setting, where a bunch of different states are present and has to happen in parallel or sequentially.
 
-## Examples
+## Examples (not updated to the latest changes)
 
 
 
