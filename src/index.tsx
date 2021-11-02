@@ -362,7 +362,7 @@ function App() {
             for (var i = 0; i < weights_temp.length; i++) {
               if ([weights[i][0], weights[i][1]].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
                 add = false;
-                weights_temp[i][2] = weights_temp[i][2] === 1 ? 0.2 : weights_temp[i][2] + 0.2;
+                weights_temp[i][2] = weights_temp[i][2] === 1 ? 0.2 : Math.round((weights_temp[i][2] + 0.2) * 10) / 10;
                 break;
               }
             }
@@ -455,7 +455,7 @@ function App() {
         const minHeight: number = Math.floor(80 / 20) - 1;
         const maxHeight: number = Math.floor((Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 19.99) / 20) + 1;
         if (algoOrDatastruct === "BFS algorithm selected") {
-          var fullDataSearchTemp: number[][][] = BFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          var fullDataSearchTemp: number[][][] = BFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], [], false, walls, weights, [minWidth, maxWidth, minHeight, maxHeight]);
           setFullSearchData(fullDataSearchTemp);
           var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
           pathTemp = pathTemp.reverse();
@@ -463,7 +463,7 @@ function App() {
           setPathFound(true);
           setPhase(3);
         } else if (algoOrDatastruct === "DFS algorithm selected") {
-          var fullDataSearchTemp: number[][][] = DFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          var fullDataSearchTemp: number[][][] = DFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], [], false, walls, weights, [minWidth, maxWidth, minHeight, maxHeight]);
           setFullSearchData(fullDataSearchTemp);
           var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
           pathTemp = pathTemp.reverse();
@@ -471,7 +471,7 @@ function App() {
           setPathFound(true);
           setPhase(3);
         } else if (algoOrDatastruct === "GBFS algorithm selected") {
-          var fullDataSearchTemp: number[][][] = GBFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          var fullDataSearchTemp: number[][][] = GBFS([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], [], false, walls, weights, [minWidth, maxWidth, minHeight, maxHeight]);
           setFullSearchData(fullDataSearchTemp);
           var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
           pathTemp = pathTemp.reverse();
@@ -479,7 +479,7 @@ function App() {
           setPathFound(true);
           setPhase(3);
         } else if (algoOrDatastruct === "A* algorithm selected") {
-          var fullDataSearchTemp: number[][][] = AStar([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], false, walls, [minWidth, maxWidth, minHeight, maxHeight]);
+          var fullDataSearchTemp: number[][][] = AStar([], [[start[0], start[1], Number.MIN_SAFE_INTEGER, Number.MIN_SAFE_INTEGER]], goal, [], [], false, walls, weights, [minWidth, maxWidth, minHeight, maxHeight]);
           setFullSearchData(fullDataSearchTemp);
           var pathTemp: number[][] = getFullDataSearch(fullDataSearchTemp, goal);
           pathTemp = pathTemp.reverse();
