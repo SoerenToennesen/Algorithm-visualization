@@ -11,7 +11,7 @@ import {getFullDataSearch} from './SearchAlgorithms/components/helperfunctions';
 
 
 
-function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: boolean, colorOfRange: number, goalColor: number, algoSelectedOption: string) {
+function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: boolean, colorOfRange: number, goalColor: number, algoSelectedOption: string, walls: number[][], weights: number[][]) {
   return (
       <div className="legend-container">
         <div className="legend-title">
@@ -23,10 +23,22 @@ function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: b
             &nbsp;Add walls
         </div>
         : null}
+        {walls.toString() !== [].toString() ? 
+        <div className="legend-info">
+          <div className="legend-colorm2"><i className='fas fa-square'/></div>
+            &nbsp;Wall nodes
+        </div>
+        : null}
         {dropdownPicked && algoSelectedOption === "Add weights" ? 
         <div className="legend-info">
           <div className="legend-color0"><i className='fas fa-square'/></div>
             &nbsp;Add weights
+        </div>
+        : null}
+        {weights.toString() !== [].toString() ? 
+        <div className="legend-info">
+          <div className="legend-colorm3"><i className='fas fa-square'/></div>
+            &nbsp;Weight nodes
         </div>
         : null}
         {dropdownPicked && algoSelectedOption === "Select nodes" && !startSelected ? 
@@ -311,10 +323,9 @@ function App() {
 
 
   if (algoSelectedOption === "Add walls") {
-    onmousedown = function(e) {}
-    onmouseup = function(e) {}
-    onmousemove = function(e) {}
-
+    onmousedown = function(e) {return;}
+    onmouseup = function(e) {return;}
+    onmousemove = function(e) {return;}
     onmousemove = function(e) {
       if (e.clientY >= 80) {
         setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
@@ -348,10 +359,9 @@ function App() {
   }
 
   if (algoSelectedOption === "Add weights") {
-    onmousedown = function(e) {}
-    onmouseup = function(e) {}
-    onmousemove = function(e) {}
-
+    onmousedown = function(e) {return;}
+    onmouseup = function(e) {return;}
+    onmousemove = function(e) {return;}
     onmousemove = function(e) {
       if (e.clientY >= 80) {
         setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
@@ -387,9 +397,9 @@ function App() {
   //The mouse event listeners are actually still running, causing a lot of rerenders... Figure out a way to turn this off
   if (dropdownPicked && algoSelectedOption === "Select nodes") {
     if (!startSelected || !goalSelected) {
-      onmousedown = function(e) {}
-      onmouseup = function(e) {}
-      onmousemove = function(e) {}
+      onmousedown = function(e) {return;}
+      onmouseup = function(e) {return;}
+      onmousemove = function(e) {return;}
       onmouseup = function(e) {
         if (algoSelectedOption !== "Select nodes") return;
         if (!startSelected && start.length === 0) {
@@ -445,9 +455,9 @@ function App() {
       setPhase(1);
     }
   } else if (goalSelected && !pathFound) {
-    onmousedown = function(e) {}
-    onmouseup = function(e) {}
-    onmousemove = function(e) {}
+    onmousedown = function(e) {return;}
+    onmouseup = function(e) {return;}
+    onmousemove = function(e) {return;}
     if (phase !== 2) {
       if (fullSearchData.length === 0 || path.length === 0) {
         const minWidth: number = -1;
@@ -671,7 +681,7 @@ function App() {
       </nav>
       {footer(dropdownPicked, startSelected, goalSelected, start, goal)}
       {/*{todo()}*/}
-      {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption)}
+      {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption, walls, weights)}
       {drawWalls(walls, true)}
       {drawWeights(weights, true)}
       {phase === 1 ? pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption) : null}

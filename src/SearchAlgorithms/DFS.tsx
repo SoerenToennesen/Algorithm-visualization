@@ -33,8 +33,8 @@ export function DFS(graph: number[][][], currentNodes: number[][], targetNode: n
                 }
             } else {
                 if ((alreadyDiscovered(discovered, [currentNodes[i][0] + directions[j][0], currentNodes[i][1] + directions[j][1]])) ||
-                ((currentNodes[i][0] + directions[j][0] <= view[0] || currentNodes[i][0] + directions[j][0] >= view[1]) || 
-                (currentNodes[i][1] + directions[j][1] <= view[2] || currentNodes[i][1] + directions[j][1] >= view[3]))) { // out of bounds, think of it as walls
+                    ((currentNodes[i][0] + directions[j][0] <= view[0] || currentNodes[i][0] + directions[j][0] >= view[1]) || 
+                    (currentNodes[i][1] + directions[j][1] <= view[2] || currentNodes[i][1] + directions[j][1] >= view[3]))) { // out of bounds, think of it as walls
                     continue;
                 } else {
                     var add: boolean = true;
@@ -61,9 +61,42 @@ export function DFS(graph: number[][][], currentNodes: number[][], targetNode: n
         }
         if (chosenDirection === -1) {
             //depth is exhausted, try a different depth. Current just return this as a dead end
-            return graph;
-        }
-        if (chosenDirection === 4) {
+            var nothingLeft: boolean = true;
+            for (var j = graph.length - 1; j >= 0; j--) {
+                var breakme: boolean = false;
+                for (var k = 0; k < directions.length; k++) {
+                    if ((alreadyDiscovered(discovered, [graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1]])) ||
+                        ((graph[j][0][0] + directions[k][0] <= view[0] || graph[j][0][0] + directions[k][0] >= view[1]) || 
+                        (graph[j][0][1] + directions[k][1] <= view[2] || graph[j][0][1] + directions[k][1] >= view[3]))) { // out of bounds, think of it as walls
+                        continue;
+                    } else {
+                        var add: boolean = true;
+                        for (var l = 0; l < walls.length; l++) {
+                            if ([graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1]].toString() === walls[l].toString()) {
+                                add = false;
+                                break;
+                            }
+                        }
+                        if (add) {
+                            for (var l = 0; l < weights.length; l++) {
+                                if ([graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1]].toString() === [weights[l][0], weights[l][1]].toString()) {
+                                    nextWaitingNodes.push([graph[j][0][0], graph[j][0][1], k, 0.2, weights[l][2]]);
+                                    add = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!add) continue;
+                        nextNodes.push([graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1], graph[j][0][0], graph[j][0][1]]);
+                        nothingLeft = false;
+                        breakme = true;
+                        break;
+                    }
+                }
+                if (breakme) break;
+            }
+            if (nothingLeft) return graph;
+        } else if (chosenDirection === 4) {
             nextNodes.push([finishedWaiting[chosenWaiting][0], finishedWaiting[chosenWaiting][1], finishedWaiting[chosenWaiting][2], finishedWaiting[chosenWaiting][3]]);
         } else {
             nextNodes.push([currentNodes[i][0] + directions[chosenDirection][0], currentNodes[i][1] + directions[chosenDirection][1], currentNodes[i][0], currentNodes[i][1]]);

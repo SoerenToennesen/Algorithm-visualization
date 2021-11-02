@@ -297,7 +297,7 @@
 
 .legend-container {
   width: 30%;
-  height: 180px;
+  height: 240px;
   position: fixed;
   bottom: 20px;
   right: -5px;
@@ -333,12 +333,20 @@
   white-space: nowrap;
 }
 
-.legend-colorm1 {
+.legend-colorm3 {
+  color: rgb(68, 0, 179);
+  display: inline;
+}
+.legend-colorm2 {
   color: rgb(146, 95, 0);
   display: inline;
 }
+.legend-colorm1 {
+  color: rgb(146, 95, 0, 0.5);
+  display: inline;
+}
 .legend-color0 {
-  color: rgb(68, 0, 179);
+  color: rgb(68, 0, 179, 0.5);
   display: inline;
 }
 .legend-color1 {

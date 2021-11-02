@@ -63,7 +63,48 @@ export function GBFS(graph: number[][][], currentNodes: number[][], targetNode: 
         } else if (bestDirection[2] == 1) {
             nextNodes.push(bestFinishedWaiting);
         } else {
-            return graph;
+            var secondaryBestDirection: number[] = [Number.MAX_SAFE_INTEGER, -1];
+            var nothingLeft: boolean = true;
+            var backtrackDirection: number[] = [];
+            for (var j = graph.length - 1; j >= 0; j--) {
+                for (var k = 0; k < directions.length; k++) {
+                    if ((alreadyDiscovered(discovered, [graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1]])) ||
+                        ((graph[j][0][0] + directions[k][0] <= view[0] || graph[j][0][0] + directions[k][0] >= view[1]) || 
+                        (graph[j][0][1] + directions[k][1] <= view[2] || graph[j][0][1] + directions[k][1] >= view[3]))) { // out of bounds, think of it as walls
+                        continue;
+                    } else {
+                        var add: boolean = true;
+                        for (var l = 0; l < walls.length; l++) {
+                            if ([graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1]].toString() === walls[l].toString()) {
+                                add = false;
+                                break;
+                            }
+                        }
+                        if (add) {
+                            for (var l = 0; l < weights.length; l++) {
+                                if ([graph[j][0][0] + directions[k][0], graph[j][0][1] + directions[k][1]].toString() === [weights[l][0], weights[l][1]].toString()) {
+                                    nextWaitingNodes.push([graph[j][0][0], graph[j][0][1], k, 0.2, weights[l][2]]);
+                                    add = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!add) continue;
+                        var h: number = Math.abs(graph[j][0][0] + directions[k][0] - targetNode[0]) + 
+                                        Math.abs(graph[j][0][1] + directions[k][1] - targetNode[1]);
+                        if (h <= secondaryBestDirection[0]) {
+                            secondaryBestDirection = [h, k];
+                            backtrackDirection = [graph[j][0][0], graph[j][0][1]];
+                        }
+                        nothingLeft = false;
+                    }
+                }
+            }
+            if (nothingLeft) {
+                return graph;
+            } else {
+                nextNodes.push([backtrackDirection[0] + directions[secondaryBestDirection[1]][0], backtrackDirection[1] + directions[secondaryBestDirection[1]][1], backtrackDirection[0], backtrackDirection[1]]);
+            }
         }
         if (!found && (currentNodes[i][0] === targetNode[0] && currentNodes[i][1] === targetNode[1])) found = true;
     }
