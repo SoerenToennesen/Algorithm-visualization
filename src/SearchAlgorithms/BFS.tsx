@@ -54,5 +54,8 @@ export function BFS(graph: number[][][], currentNodes: number[][], targetNode: n
         }
         if (!found && (currentNodes[i][0] === targetNode[0] && currentNodes[i][1] === targetNode[1])) found = true;
     }
+    if (nextNodes.toString() === [].toString()) {
+        return graph;
+    }
     return BFS(graph, nextNodes, targetNode, nextWaitingNodes, discovered, found, walls, weights, view);
 }

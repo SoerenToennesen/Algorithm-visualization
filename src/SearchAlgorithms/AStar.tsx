@@ -64,8 +64,10 @@ export function AStar(graph: number[][][], currentNodes: number[][], targetNode:
         }
         if (bestDirection[2] == 0) {
             nextNodes.push([currentNodes[i][0] + directions[bestDirection[1]][0], currentNodes[i][1] + directions[bestDirection[1]][1], currentNodes[i][0], currentNodes[i][1]]);
-        } else {
+        } else if (bestDirection[2] == 1) {
             nextNodes.push(bestFinishedWaiting);
+        } else {
+            return graph;
         }
         if (!found && (currentNodes[i][0] === targetNode[0] && currentNodes[i][1] === targetNode[1])) found = true;
     }
