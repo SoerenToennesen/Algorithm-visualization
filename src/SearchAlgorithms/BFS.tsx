@@ -8,7 +8,8 @@ export function BFS(graph: number[][][], currentNodes: number[][], targetNode: n
     const directions: number[][] = [[1,0],[0,1],[-1,0],[0,-1]];
     var nextNodes: number[][] = [];
     var nextWaitingNodes: number[][] = [];
-    for (var i = 0; i < waitingNodes.length; i++) {
+    var i: number;
+    for (i = 0; i < waitingNodes.length; i++) {
         if (waitingNodes[i][3] >= waitingNodes[i][4]) {
             nextNodes.push([waitingNodes[i][0] + directions[waitingNodes[i][2]][0], waitingNodes[i][1] + directions[waitingNodes[i][2]][1], waitingNodes[i][0], waitingNodes[i][1]]);
         } else {
@@ -17,7 +18,7 @@ export function BFS(graph: number[][][], currentNodes: number[][], targetNode: n
     }
     graph.push([[]]);
     var depth = graph.length - 1;
-    for (var i = 0; i < currentNodes.length; i++) {
+    for (i = 0; i < currentNodes.length; i++) {
         if (alreadyDiscovered(discovered, [currentNodes[i][0], currentNodes[i][1]])) {
             continue;
         }
@@ -33,14 +34,15 @@ export function BFS(graph: number[][][], currentNodes: number[][], targetNode: n
                 continue;
             }
             var add: boolean = true;
-            for (var k = 0; k < walls.length; k++) {
+            var k: number;
+            for (k = 0; k < walls.length; k++) {
                 if ([currentNodes[i][0] + directions[j][0], currentNodes[i][1] + directions[j][1]].toString() === walls[k].toString()) {
                     add = false;
                     break;
                 }
             }
             if (add) {
-                for (var k = 0; k < weights.length; k++) {
+                for (k = 0; k < weights.length; k++) {
                     if ([currentNodes[i][0] + directions[j][0], currentNodes[i][1] + directions[j][1]].toString() === [weights[k][0], weights[k][1]].toString()) {
                         nextWaitingNodes.push([currentNodes[i][0], currentNodes[i][1], j, 0.2, weights[k][2]]);
                         add = false;
