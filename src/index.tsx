@@ -36,6 +36,7 @@ function App() {
   const [click, setClick] = useState(false);
   const [dropdownAlgorithms, setDropdownAlgorithms] = useState(false);
   const [dropdownDatastructures, setDropdownDatastructures] = useState(false);
+  const [dropdownSearchAlgorithms, setDropdownSearchAlgorithms] = useState(false);
   const [algoOrDatastruct, setAlgoOrDatastruct] = useState<string>("Nothing selected");
 
   const onMouseEnterDropdownAlgorithms = () => {
@@ -66,6 +67,20 @@ function App() {
           setDropdownDatastructures(false);
       }
   };
+  const onMouseEnterDropdownSearchAlgorithms = () => {
+    if (window.innerWidth < 960) {
+        setDropdownSearchAlgorithms(false);
+    } else {
+        setDropdownSearchAlgorithms(true);
+    }
+};
+const onMouseLeaveDropdownSearchAlgorithms = () => {
+    if (window.innerWidth < 960) {
+        setDropdownSearchAlgorithms(false);
+    } else {
+        setDropdownSearchAlgorithms(false);
+    }
+};
 
 
   if (algoSelectedOption === "Add walls") {
@@ -338,7 +353,7 @@ function App() {
               </li>}
               <li className='nav-item' onMouseEnter={onMouseEnterDropdownAlgorithms} onMouseLeave={onMouseLeaveDropdownAlgorithms}>
                   <div className='nav-links' onClick={() => setClick(false)}>
-                      Algorithms <i className='fas fa-caret-down' />
+                      Pathfinding Algorithms <i className='fas fa-caret-down' />
                   </div>
                   {dropdownAlgorithms && 
                   <ul className='dropdown-menu'>
@@ -365,6 +380,20 @@ function App() {
                   </ul>
                   }
               </li>
+              <li className='nav-item' onMouseEnter={onMouseEnterDropdownSearchAlgorithms} onMouseLeave={onMouseLeaveDropdownSearchAlgorithms}>
+                  <div className='nav-links' onClick={() => setClick(false)}>
+                      Sorting Algorithms <i className='fas fa-caret-down' />
+                  </div>
+                  {dropdownSearchAlgorithms && 
+                  <ul className='dropdown-menu'>
+                      <li>
+                          <div className="dropdown-link">
+                              Nothing implemented yet
+                          </div>
+                      </li>
+                  </ul>
+                  }
+              </li>
               <li className='nav-item' onMouseEnter={onMouseEnterDropdownDatastructures} onMouseLeave={onMouseLeaveDropdownDatastructures}>
                   <div className='nav-links' onClick={() => setClick(false)}>
                       Data Structures <i className='fas fa-caret-down' />
@@ -381,7 +410,7 @@ function App() {
               </li>
               <li className='nav-item'>
                   <div className='nav-links-mobile' onClick={() => setClick(false)}>
-                      Dropdowns here not yet implemented
+                      Dropdowns and buttons not yet implemented
                   </div>
               </li>
           </ul>
