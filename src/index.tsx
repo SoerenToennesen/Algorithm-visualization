@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import 'font-awesome/css/font-awesome.min.css';
+import styled from 'styled-components';
 
 import {BFS} from './SearchAlgorithms/BFS';
 import {DFS} from './SearchAlgorithms/DFS';
@@ -12,8 +13,53 @@ import {legend} from './components/legend';
 import {footer} from './components/footer';
 import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights} from './components/drawsearches';
 
+interface props {
+  opacity: number;
+  color: string;
+}
+
+const Styles = styled.div<props>`
+  display: flex;
+  position: fixed;
+  align-items: center;
+  color: rgb(125,194,175);
+  margin-top: 50px;
+  right: 30px;
+
+  .value {
+    flex: 1;
+    margin-right: 15px;
+    font-size: 30px;
+  }
+  
+  .slider {
+    flex: 100;
+    -webkit-appearance: none;
+    height: 10px;
+    width: 300px;
+    border-radius: 5px;
+    background: rgb(226,125,95,0.8);
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: ${(props) => props.color};
+      opacity: ${(props) => props.opacity};
+      cursor: pointer;
+      outline: 3px solid rgb(65,126,238);
+    }
+  }
+`;
+
 function App() {
   const [dropdownPicked, setDropdownPicked] = useState(false);
+  const [dropdownPickedSearch, setDropdownPickedSearch] = useState(false);
+  const [dropdownPickedSort, setDropdownPickedSort] = useState(false);
+  const [dropdownPickedDatastructures, setDropdownPickedDatastructures] = useState(false);
   const [startSelected, setStartSelected] = useState(false);
   const [goalSelected, setGoalSelected] = useState(false);
   const [hoverBox, setHoverBox] = useState<number[]>([]);
@@ -32,12 +78,16 @@ function App() {
   const [walls, setWalls] = useState<number[][]>([]);
   const [weights, setWeights] = useState<number[][]>([]);
   const [algoSelected, setAlgoSelected] = useState(false);
+  const [algoSearchSelected, setAlgoSearchSelected] = useState(false);
+  const [algoSortSelected, setAlgoSortSelected] = useState(false);
+  const [datastructureSelected, setDatastructureSelected] = useState(false);
   const [algoSelectedOption, setAlgoSelectedOption] = useState("Select nodes");
   const [click, setClick] = useState(false);
   const [dropdownAlgorithms, setDropdownAlgorithms] = useState(false);
   const [dropdownDatastructures, setDropdownDatastructures] = useState(false);
   const [dropdownSearchAlgorithms, setDropdownSearchAlgorithms] = useState(false);
   const [algoOrDatastruct, setAlgoOrDatastruct] = useState<string>("Nothing selected");
+  const [sliderValue, setSliderValue] = useState<number>(50);
 
   const onMouseEnterDropdownAlgorithms = () => {
       if (window.innerWidth < 960) {
@@ -73,15 +123,18 @@ function App() {
     } else {
         setDropdownSearchAlgorithms(true);
     }
-};
-const onMouseLeaveDropdownSearchAlgorithms = () => {
+  };
+  const onMouseLeaveDropdownSearchAlgorithms = () => {
     if (window.innerWidth < 960) {
         setDropdownSearchAlgorithms(false);
     } else {
         setDropdownSearchAlgorithms(false);
     }
-};
+  };
 
+  if (dropdownPickedSort) {
+    
+  }
 
   if (algoSelectedOption === "Add walls") {
     onmousedown = function() {return;}
@@ -289,8 +342,22 @@ const onMouseLeaveDropdownSearchAlgorithms = () => {
     }
   }, [pathFound, fullSearchData, path]);
 
+  function sortComponents() {
+    return (
+      <>
+        <div className="slider-text">Amount of entries</div>
+        <Styles opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
+          <div className="value">{sliderValue}</div>
+          <input type="range" min={1} max={100} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} />
+        </Styles>
+      </>
+    );
+  }
+
   function reset() {
     setDropdownPicked(false);
+    setDropdownPickedSort(false);
+    setDropdownPickedSearch(false);
     setAlgoOrDatastruct("Nothing selected");
     setAlgoSelected(false);
     setStartSelected(false);
@@ -325,6 +392,14 @@ const onMouseLeaveDropdownSearchAlgorithms = () => {
     setColorOfRange(0);
   }
 
+  function partialSearchReset() {
+    //TODO
+  }
+
+  function partialSortReset() {
+    //TODO
+  }
+
   // Refactoring navbar into a separate component is more difficult, as it has a bunch of setstates
   return (
     <div className="body">
@@ -353,27 +428,27 @@ const onMouseLeaveDropdownSearchAlgorithms = () => {
               </li>}
               <li className='nav-item' onMouseEnter={onMouseEnterDropdownAlgorithms} onMouseLeave={onMouseLeaveDropdownAlgorithms}>
                   <div className='nav-links' onClick={() => setClick(false)}>
-                      Pathfinding Algorithms <i className='fas fa-caret-down' />
+                      Pathfinder Algorithms <i className='fas fa-caret-down' />
                   </div>
                   {dropdownAlgorithms && 
                   <ul className='dropdown-menu'>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("BFS algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("BFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Breadth-First Search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("DFS algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("DFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Depth-First Search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("GBFS algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("GBFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Greedy Best-First Search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("A* algorithm selected"); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("A* algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               A* Search
                           </div>
                       </li>
@@ -382,13 +457,39 @@ const onMouseLeaveDropdownSearchAlgorithms = () => {
               </li>
               <li className='nav-item' onMouseEnter={onMouseEnterDropdownSearchAlgorithms} onMouseLeave={onMouseLeaveDropdownSearchAlgorithms}>
                   <div className='nav-links' onClick={() => setClick(false)}>
-                      Sorting Algorithms <i className='fas fa-caret-down' />
+                      Search &amp; Sort Algorithms <i className='fas fa-caret-down' />
                   </div>
                   {dropdownSearchAlgorithms && 
                   <ul className='dropdown-menu'>
                       <li>
-                          <div className="dropdown-link">
-                              Nothing implemented yet
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Linear search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); setAlgoSearchSelected(true); partialSearchReset(); }}>
+                              Linear search
+                          </div>
+                      </li>
+                      <li>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Binary search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); setAlgoSearchSelected(true); partialSearchReset(); }}>
+                              Binary search
+                          </div>
+                      </li>
+                      <li>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Jump search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); setAlgoSearchSelected(true); partialSearchReset(); }}>
+                              Jump search
+                          </div>
+                      </li>
+                      <div className="divider"/>
+                      <li>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Quick sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
+                              Quick sort
+                          </div>
+                      </li>
+                      <li>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Merge sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
+                              Merge sort
+                          </div>
+                      </li>
+                      <li>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Bubble sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
+                              Bubble sort
                           </div>
                       </li>
                   </ul>
@@ -424,6 +525,7 @@ const onMouseLeaveDropdownSearchAlgorithms = () => {
       {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption, walls, weights)}
       {drawWalls(walls, true)}
       {drawWeights(weights, true)}
+      {(dropdownPickedSort || dropdownPickedSearch) && sortComponents()}
       {!goalSelected && dropdownPicked && pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption)}
       {startSelected && drawStartAndGoal(start, false, 0)}
       {goalSelected && drawStartAndGoal(goal, true, goalColor)}

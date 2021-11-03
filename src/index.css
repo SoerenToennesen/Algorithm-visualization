@@ -16,6 +16,14 @@
   --unselectable-color: rgb(184, 184, 184);
 }
 
+.slider-text {
+  position: absolute;
+  font-size: 25px;
+  top: 100px;
+  right: 88px;
+  color: var(--secondary);
+}
+
 .btn {
   padding: 8px 20px;
   border-radius: 4px;
@@ -82,6 +90,10 @@
   padding: 16px;
   cursor: pointer;
   font-size: 0.8rem;
+}
+
+.divider {
+  border-top: 2px solid rgb(117, 86, 0);
 }
 
 .navbar {
