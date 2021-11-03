@@ -1,4 +1,4 @@
-import {alreadyDiscovered} from './components/helperfunctions';
+import {alreadyDiscovered} from './helperfunctions';
 
 export function GBFS(graph: number[][][], currentNodes: number[][], targetNode: number[], waitingNodes: number[][],
             discovered: number[][], found: boolean, walls: number[][], weights: number[][], view: number[]): number[][][] {

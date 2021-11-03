@@ -7,10 +7,10 @@ import {BFS} from './SearchAlgorithms/BFS';
 import {DFS} from './SearchAlgorithms/DFS';
 import {GBFS} from './SearchAlgorithms/GBFS';
 import {AStar} from './SearchAlgorithms/AStar';
-import {getFullDataSearch} from './SearchAlgorithms/components/helperfunctions';
-import {legend} from './SearchAlgorithms/components/legend';
-import {footer} from './SearchAlgorithms/components/footer';
-import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights} from './SearchAlgorithms/components/drawsearches';
+import {getFullDataSearch} from './SearchAlgorithms/helperfunctions';
+import {legend} from './components/legend';
+import {footer} from './components/footer';
+import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights} from './components/drawsearches';
 
 function App() {
   const [dropdownPicked, setDropdownPicked] = useState(false);

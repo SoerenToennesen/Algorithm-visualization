@@ -1,4 +1,4 @@
-import {alreadyDiscovered} from './components/helperfunctions';
+import {alreadyDiscovered} from './helperfunctions';
 
 //BFS building the lookup matrix
 //currentNodes stores both the current node and it's parent node (first 2 index = current, last 2 index = parent)
