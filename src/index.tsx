@@ -310,9 +310,9 @@ function App() {
     setColorOfRange(0);
   }
 
+  // Refactoring navbar into a separate component is more difficult, as it has a bunch of setstates
   return (
     <div className="body">
-      <div className="walls"></div>
       <nav className="navbar">
           <div className='navbar-logo'>
               DSA visuals <i className='fas fa-project-diagram'/>
@@ -324,7 +324,7 @@ function App() {
               <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>
-              {algoSelected ?
+              {algoSelected &&
               <li className='nav-item'>
                       <div className={drawingDone ? (algoSelectedOption !== "Select nodes" ? 'nav-links' : 'nav-li-unclickable') : "nav-li-unclick-2"} onClick={drawingDone ? function() {setClick(false); setAlgoSelectedOption("Select nodes"); } : function() {}}>
                           Select nodes
@@ -335,8 +335,7 @@ function App() {
                       <div className={drawingDone ? (algoSelectedOption !== "Add weights" ? 'nav-links' : 'nav-li-unclickable') : "nav-li-unclick-2"} onClick={drawingDone ? function() {setClick(false); setAlgoSelectedOption("Add weights"); } : function() {}}>
                           Add weights
                       </div>
-              </li>
-              : null}
+              </li>}
               <li className='nav-item' onMouseEnter={onMouseEnterDropdownAlgorithms} onMouseLeave={onMouseLeaveDropdownAlgorithms}>
                   <div className='nav-links' onClick={() => setClick(false)}>
                       Algorithms <i className='fas fa-caret-down' />
@@ -396,13 +395,13 @@ function App() {
       {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption, walls, weights)}
       {drawWalls(walls, true)}
       {drawWeights(weights, true)}
-      {!goalSelected && dropdownPicked ? pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption) : null}
-      {startSelected ? drawStartAndGoal(start, false, 0) : null}
-      {goalSelected ? drawStartAndGoal(goal, true, goalColor) : null}
-      {pathFound ? drawSearch(positions, true) : null}
-      {pathFound ? drawSearch(alreadyDrawn, false) : null}
-      {pathFound ? drawPath(positionsPath, true) : null}
-      {pathFound ? drawPath(alreadyDrawnPath, false) : null}   
+      {!goalSelected && dropdownPicked && pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption)}
+      {startSelected && drawStartAndGoal(start, false, 0)}
+      {goalSelected && drawStartAndGoal(goal, true, goalColor)}
+      {pathFound && drawSearch(positions, true)}
+      {pathFound && drawSearch(alreadyDrawn, false)}
+      {pathFound && drawPath(positionsPath, true)}
+      {pathFound && drawPath(alreadyDrawnPath, false)}   
     </div>
   );
 }
