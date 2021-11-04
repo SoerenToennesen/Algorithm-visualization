@@ -11,7 +11,7 @@ import {AStar} from './SearchAlgorithms/AStar';
 import {getFullDataSearch} from './SearchAlgorithms/helperfunctions';
 import {legend} from './components/legend';
 import {footer} from './components/footer';
-import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights} from './components/drawsearches';
+import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights, drawSortData} from './components/drawsearches';
 
 interface props {
   opacity: number;
@@ -88,6 +88,9 @@ function App() {
   const [dropdownSearchAlgorithms, setDropdownSearchAlgorithms] = useState(false);
   const [algoOrDatastruct, setAlgoOrDatastruct] = useState<string>("Nothing selected");
   const [sliderValue, setSliderValue] = useState<number>(50);
+  const [sortData, setSortData] = useState<number[][]>([]);
+  const [sortRun, setSortRun] = useState<number[][]>([]);
+  const [runSort, setRunSort] = useState(false);
 
   const onMouseEnterDropdownAlgorithms = () => {
       if (window.innerWidth < 960) {
@@ -348,11 +351,82 @@ function App() {
         <div className="slider-text">Amount of entries</div>
         <Styles opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
           <div className="value">{sliderValue}</div>
-          <input type="range" min={1} max={100} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} />
+          <input type="range" min={2} max={(Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} />
         </Styles>
+        <button className={'btn-sort'} onClick={() => setRunSort(true)}>
+          Run sort
+        </button>
       </>
     );
   }
+
+  useEffect(() => {
+    var h: number = Math.floor((Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 19.99) / 20) - 3;
+    var builtSortData: number[][] = [];
+    for (var x = 0; x < sliderValue; x++) {
+      var y: number = Math.floor(Math.random() * (h - 1 + 1) + 1);
+      builtSortData.push([x, y]);
+    }
+    setSortData(builtSortData);
+  }, [sliderValue]);
+
+  // Sort algorithm also happens here
+  useEffect(() => {
+    if (runSort) {
+
+      
+      var sortDataTemp: number[][] = sortData;
+      //var sortRunTemp: number[][] = sortRun;
+      setSortData(sortDataTemp);
+      var i: number = -1;
+      var j: number = 0;
+      var k: number = 0;
+      var pivot: number[] = sortDataTemp[sortDataTemp.length - 1];
+      var isLeft: boolean = true;
+      var rightPivotStart: number;
+      var initialRound: boolean = true;
+      const interval = setInterval(() => {
+        setSortData([]); // for some reason this updates it... kinda...
+        while (j < pivot[0]) {
+          if (sortDataTemp[j][1] <= pivot[1]) {
+            i++;
+            var swap: number[] = sortDataTemp[i];
+            sortDataTemp[i][0] = j;
+            sortDataTemp[j][0] = i;
+            sortDataTemp[i] = sortDataTemp[j];
+            sortDataTemp[j] = swap;
+            setSortData(sortDataTemp);
+          }
+          j++;
+        }
+        var swap2: number[] = sortDataTemp[i+1];
+        sortDataTemp[i+1][0] = pivot[0];
+        sortDataTemp[pivot[0]][0] = i+1;
+        sortDataTemp[i+1] = sortDataTemp[pivot[0]];
+        sortDataTemp[pivot[0]] = swap2;
+        setSortData(sortDataTemp);
+        if (!isLeft && pivot[0] === rightPivotStart + 2) { // might be + 3
+          clearInterval(interval);
+          return;
+        }
+        if (initialRound) {
+          rightPivotStart = i + 1;
+        }
+        initialRound = false;
+        if (pivot[0] <= 0 || !isLeft) { // might be <= 1
+          isLeft = false;
+          pivot = sortDataTemp[sortDataTemp.length - 1 - k];
+          i = rightPivotStart;
+          j = rightPivotStart + 1;
+          k++;
+        } else {
+          pivot = sortDataTemp[i];
+          i = -1;
+          j = 0;
+        }
+      }, 200);
+    }
+  }, [runSort]);
 
   function reset() {
     setDropdownPicked(false);
@@ -526,6 +600,7 @@ function App() {
       {drawWalls(walls, true)}
       {drawWeights(weights, true)}
       {(dropdownPickedSort || dropdownPickedSearch) && sortComponents()}
+      {dropdownPickedSort && drawSortData(sortData)}
       {!goalSelected && dropdownPicked && pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption)}
       {startSelected && drawStartAndGoal(start, false, 0)}
       {goalSelected && drawStartAndGoal(goal, true, goalColor)}

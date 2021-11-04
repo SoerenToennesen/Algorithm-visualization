@@ -38,7 +38,38 @@
   border: 2px solid transparent;
 }
 
+.btn-sort {
+  position: absolute;
+  top: 170px;
+  right: 105px;
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin-right: 20px;
+  outline: none;
+  border: none;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  background-color: var(--third);
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
 .bt-done {
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin-right: 20px;
+  outline: none;
+  border: none;
+  font-size: 18px;
+  color: #fff;
+  cursor: auto;
+  background-color: var(--unselectable-color);
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.bt-sort-done {
   padding: 8px 20px;
   border-radius: 4px;
   margin-right: 20px;
@@ -58,6 +89,14 @@
   color: #fff;
   border-radius: 4px;
   border: 2px solid var(--primary);
+}
+
+.btn-sort:hover {
+  transition: all 0.3s ease-out;
+  background-color: var(--primary);
+  color: #fff;
+  border-radius: 4px;
+  border: 2px solid var(--third);
 }
 
 .dropdown-menu {
