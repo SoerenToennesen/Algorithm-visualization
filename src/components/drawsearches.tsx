@@ -122,7 +122,7 @@ export function drawWeights(weights: number[][], isFade: boolean) {
   );
 }
 
-export function drawSortData(data: number[][]) {
+export function drawSortData(data: number[][], sortFinished: boolean) {
   return (
     data.map(entry => (
       <div style={{
@@ -133,7 +133,7 @@ export function drawSortData(data: number[][]) {
         bottom: "0px",
         left: "0px",
         borderRadius: "5px",
-        backgroundColor: "rgb(65,126,238,0.7)",
+        backgroundColor: sortFinished ? "rgb(125,194,175,0.7)" : "rgb(65,126,238,0.7)",
         display: "inline-block",
         zIndex: -2,
       }}/>
