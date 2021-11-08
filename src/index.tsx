@@ -8,10 +8,13 @@ import {BFS} from './SearchAlgorithms/BFS';
 import {DFS} from './SearchAlgorithms/DFS';
 import {GBFS} from './SearchAlgorithms/GBFS';
 import {AStar} from './SearchAlgorithms/AStar';
+import {mergeSort} from './MergeAlgorithms/mergesort';
+import {quickSort} from './MergeAlgorithms/quicksort';
 import {getFullDataSearch} from './SearchAlgorithms/helperfunctions';
 import {legend} from './components/legend';
 import {footer} from './components/footer';
-import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights, drawSortData} from './components/drawsearches';
+import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights} from './components/drawsearches';
+import {drawSortData} from './components/drawsorts';
 
 interface props {
   opacity: number;
@@ -66,12 +69,14 @@ function App() {
   const [start, setStart] = useState<number []>([]);
   const [goal, setGoal] = useState<number []>([]);
   const [fullSearchData, setFullSearchData] = useState<number[][][]>([]);
+  const [fullSortData, setFullSortData] = useState<number[][][]>([]);
   const [positions, setPositions] = useState<number[][][]>([]);
   const [positionsPath, setPositionsPath] = useState<number[][]>([]);
   const [alreadyDrawn, setAlreadyDrawn] = useState<number[][][]>([]);
   const [alreadyDrawnPath, setAlreadyDrawnPath] = useState<number[][]>([]);
   const [path, setPath] = useState<number[][]>([]);
   const [pathFound, setPathFound] = useState(false);
+  const [sortFound, setSortFound] = useState(false);
   const [colorOfRange, setColorOfRange] = useState(0);
   const [goalColor, setGoalColor] = useState(0);
   const [drawingDone, setDrawingDone] = useState(true);
@@ -89,7 +94,7 @@ function App() {
   const [algoOrDatastruct, setAlgoOrDatastruct] = useState<string>("Nothing selected");
   const [sliderValue, setSliderValue] = useState<number>(50);
   const [sortData, setSortData] = useState<number[][]>([]);
-  const [runSort, setRunSort] = useState(false);
+  const [runSort, setRunSort] = useState("");
   const [sortFinished, setSortFinished] = useState(false);
 
   const onMouseEnterDropdownAlgorithms = () => {
@@ -149,13 +154,16 @@ function App() {
         onmousedown = function(e2) {
           if (e2.clientY >= 80) {
             var add: boolean = true;
-            var walls_temp = walls;
+            var remove: boolean = false;
+            var walls_temp: number[][] = [];
             var i: number;
-            for (i = 0; i < walls_temp.length; i++) {
-              if (walls_temp[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+            for (i = 0; i < walls.length; i++) {
+              if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
                 add = false;
-                break;
+                remove = true;
+                continue;
               }
+              walls_temp.push(walls[i]);
             }
             if (add) {
               var weights_temp: number[][] = [];
@@ -168,6 +176,9 @@ function App() {
             }
             if (add) {
               walls_temp.push([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)]);
+              setWalls(walls_temp);
+            }
+            if (remove) {
               setWalls(walls_temp);
             }
           }
@@ -353,12 +364,27 @@ function App() {
           <div className="value">{sliderValue}</div>
           <input type="range" min={2} max={(Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} />
         </Styles>
-        <button className={'btn-sort'} onClick={() => setRunSort(true)}>
+        <button className={'btn-sort'} onClick={() => setRunSort(algoOrDatastruct)}>
           Run sort
         </button>
       </>
     );
   }
+
+  useEffect(() => {
+    if (sortFound) {
+      var i: number = 0;
+      const interval = setInterval(() => {
+        if (i >= fullSortData.length) {
+          setSortFinished(true);
+          clearInterval(interval);
+          return;
+        }
+        setSortData(fullSortData[i]);
+        i++;
+      }, 500);
+    }
+  }, [sortFound]);
 
   useEffect(() => {
     var h: number = Math.floor((Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 19.99) / 20) - 3;
@@ -367,73 +393,95 @@ function App() {
       var y: number = Math.floor(Math.random() * (h - 1 + 1) + 1);
       builtSortData.push([x, y]);
     }
+    //builtSortData = [[0,1],[1,8],[2,3],[3,9],[4,4],[5,5],[6,7]];
     setSortData(builtSortData);
   }, [sliderValue]);
 
   // Sort algorithm also happens here
   useEffect(() => {
-    if (runSort) {
+    if (runSort === "Quick sort selected") {
+      var sortDataWithoutIndex: number[] = [];
+      for (var i = 0; i < sortData.length; i++) {
+        sortDataWithoutIndex.push(sortData[i][1]);
+      }
+      sortDataWithoutIndex = [1,6,4,7,9,5,3,6,8,5,34,6,4,3,6,8,3];
+      var fullSortDataTemp: number[] = quickSort(sortDataWithoutIndex, 0, sortDataWithoutIndex.length - 1, -1, true);
+      //setFullSortData(fullSortDataTemp);
+      //setSortFound(true);
+      console.log(fullSortDataTemp);
+    }
+
+
+    if (runSort === "Merge sort selected") {
+      var sortDataWithoutIndex2: number[][] = [];
+      for (var i = 0; i < sortData.length; i++) {
+        sortDataWithoutIndex2.push([sortData[i][1]]);
+      }
+      var fullSortDataTemp2: number[][][] = mergeSort(sortDataWithoutIndex2, []);
+      setFullSortData(fullSortDataTemp2);
+      setSortFound(true);
+    }
+
+    /*
+
+    if (runSort === "Quick sort selected") {
       var sortDataTemp: number[][] = sortData;
-      setSortData(sortDataTemp);
       var i: number = -1;
       var j: number = 0;
       var k: number = 0;
       var pivot: number[] = sortDataTemp[sortDataTemp.length - 1];
-      console.log("pivot0", pivot[0]);
       var isLeft: boolean = true;
       var rightPivotStart: number;
-      var initialRound: boolean = true;
       const interval = setInterval(() => {
-        setSortData([]); // for some reason this updates it... kinda...
-        while (j < pivot[0]) {
-          if (sortDataTemp[j][1] <= pivot[1]) {
+        console.log(i, j, pivot[0], sortDataTemp.length);
+        if (j < pivot[0]) {
+          if (sortDataTemp[j][1] < pivot[1]) {
             i++;
-            for (var l = 0; l < sortDataTemp.length; l++) {
-              console.log("before", sortDataTemp[l][1]);
-            }
             var swap: number[] = sortDataTemp[i];
             sortDataTemp[i][0] = j;
             sortDataTemp[j][0] = i;
             sortDataTemp[i] = sortDataTemp[j];
             sortDataTemp[j] = swap;
-            for (var l = 0; l < sortDataTemp.length; l++) {
-              console.log("after", sortDataTemp[l][1]);
-            }
+            setSortData([]);
             setSortData(sortDataTemp);
           }
-          console.log("j", j);
           j++;
-        }
-        console.log("check")
-        var swap2: number[] = sortDataTemp[i+1];
-        sortDataTemp[i+1][0] = pivot[0];
-        sortDataTemp[pivot[0]][0] = i+1;
-        sortDataTemp[i+1] = sortDataTemp[pivot[0]];
-        sortDataTemp[pivot[0]] = swap2;
-        setSortData(sortDataTemp);
-        if (!isLeft && pivot[0] === rightPivotStart + 2) { // might be + 3
-          setSortFinished(true);
-          clearInterval(interval);
-          return;
-        }
-        if (initialRound) {
-          rightPivotStart = i + 1;
-        }
-        initialRound = false;
-        if (pivot[0] <= 0 || !isLeft) { // might be <= 1
-          isLeft = false;
-          pivot = sortDataTemp[sortDataTemp.length - 1 - k];
-          i = rightPivotStart;
-          j = rightPivotStart + 1;
-          k++;
         } else {
-          pivot = sortDataTemp[i];
-          i = -1;
-          j = 0;
+          if (sortDataTemp[i+1][0] !== pivot[0]) {
+            var swap2: number[] = sortDataTemp[i+1];
+            var initialPivotIndex: number = pivot[0];
+            sortDataTemp[i+1][0] = pivot[0];
+            sortDataTemp[pivot[0]][0] = i+1;
+            sortDataTemp[i+1] = sortDataTemp[initialPivotIndex];
+            sortDataTemp[initialPivotIndex] = swap2;
+            setSortData([]);
+            setSortData(sortDataTemp);
+          }
+          if (!isLeft && pivot[0] === rightPivotStart + 1) {
+            setSortFinished(true);
+            clearInterval(interval);
+            return;
+          }
+          if (rightPivotStart === undefined) {
+            rightPivotStart = i + 1;
+          }
+          if (pivot[0] <= 0 || !isLeft) {
+            isLeft = false;
+            pivot = sortDataTemp[sortDataTemp.length - 1 - k];
+            i = rightPivotStart;
+            j = rightPivotStart + 1;
+            k++;
+          } else {
+            pivot = sortDataTemp[i];
+            i = -1;
+            j = 0;
+          }
         }
-      }, 200);
-    }
+      }, 100);
+    }*/
   }, [runSort]);
+
+  
 
   function reset() {
     setDropdownPicked(false);
@@ -614,7 +662,7 @@ function App() {
       {pathFound && drawSearch(positions, true)}
       {pathFound && drawSearch(alreadyDrawn, false)}
       {pathFound && drawPath(positionsPath, true)}
-      {pathFound && drawPath(alreadyDrawnPath, false)}   
+      {pathFound && drawPath(alreadyDrawnPath, false)}
     </div>
   );
 }
