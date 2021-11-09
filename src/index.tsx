@@ -362,7 +362,7 @@ function App() {
         <div className="slider-text">Amount of entries</div>
         <Styles opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
           <div className="value">{sliderValue}</div>
-          <input type="range" min={2} max={(Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} />
+          <input type="range" min={2} max={(Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} onInput={() => partialSortReset()} />
         </Styles>
         <button className={'btn-sort'} onClick={() => setRunSort(algoOrDatastruct)}>
           Run sort
@@ -382,7 +382,7 @@ function App() {
         }
         setSortData(fullSortData[i]);
         i++;
-      }, 500);
+      }, 5000 / fullSortData.length);
     }
   }, [sortFound]);
 
@@ -393,7 +393,6 @@ function App() {
       var y: number = Math.floor(Math.random() * (h - 1 + 1) + 1);
       builtSortData.push([x, y]);
     }
-    //builtSortData = [[0,1],[1,8],[2,3],[3,9],[4,4],[5,5],[6,7]];
     setSortData(builtSortData);
   }, [sliderValue]);
 
@@ -404,13 +403,18 @@ function App() {
       for (var i = 0; i < sortData.length; i++) {
         sortDataWithoutIndex.push(sortData[i][1]);
       }
-      sortDataWithoutIndex = [1,6,4,7,9,5,3,6,8,5,34,6,4,3,6,8,3];
-      var fullSortDataTemp: number[] = quickSort(sortDataWithoutIndex, 0, sortDataWithoutIndex.length - 1, -1, true);
-      //setFullSortData(fullSortDataTemp);
-      //setSortFound(true);
-      console.log(fullSortDataTemp);
+      var fullSortDataTemp: number[][] = quickSort([], sortDataWithoutIndex, 0, sortDataWithoutIndex.length - 1);
+      var fullSortDataTempWithIndex: number[][][] = [];
+      for (var n = 0; n < fullSortDataTemp.length; n++) {
+          var finalBuiltDataTemp: number[][] = [];
+          for (var p = 0; p < fullSortDataTemp[n].length; p++) {
+              finalBuiltDataTemp.push([p, fullSortDataTemp[n][p]]);
+          }
+          fullSortDataTempWithIndex.push(finalBuiltDataTemp);
+      }
+      setFullSortData(fullSortDataTempWithIndex);
+      setSortFound(true);
     }
-
 
     if (runSort === "Merge sort selected") {
       var sortDataWithoutIndex2: number[][] = [];
@@ -421,64 +425,6 @@ function App() {
       setFullSortData(fullSortDataTemp2);
       setSortFound(true);
     }
-
-    /*
-
-    if (runSort === "Quick sort selected") {
-      var sortDataTemp: number[][] = sortData;
-      var i: number = -1;
-      var j: number = 0;
-      var k: number = 0;
-      var pivot: number[] = sortDataTemp[sortDataTemp.length - 1];
-      var isLeft: boolean = true;
-      var rightPivotStart: number;
-      const interval = setInterval(() => {
-        console.log(i, j, pivot[0], sortDataTemp.length);
-        if (j < pivot[0]) {
-          if (sortDataTemp[j][1] < pivot[1]) {
-            i++;
-            var swap: number[] = sortDataTemp[i];
-            sortDataTemp[i][0] = j;
-            sortDataTemp[j][0] = i;
-            sortDataTemp[i] = sortDataTemp[j];
-            sortDataTemp[j] = swap;
-            setSortData([]);
-            setSortData(sortDataTemp);
-          }
-          j++;
-        } else {
-          if (sortDataTemp[i+1][0] !== pivot[0]) {
-            var swap2: number[] = sortDataTemp[i+1];
-            var initialPivotIndex: number = pivot[0];
-            sortDataTemp[i+1][0] = pivot[0];
-            sortDataTemp[pivot[0]][0] = i+1;
-            sortDataTemp[i+1] = sortDataTemp[initialPivotIndex];
-            sortDataTemp[initialPivotIndex] = swap2;
-            setSortData([]);
-            setSortData(sortDataTemp);
-          }
-          if (!isLeft && pivot[0] === rightPivotStart + 1) {
-            setSortFinished(true);
-            clearInterval(interval);
-            return;
-          }
-          if (rightPivotStart === undefined) {
-            rightPivotStart = i + 1;
-          }
-          if (pivot[0] <= 0 || !isLeft) {
-            isLeft = false;
-            pivot = sortDataTemp[sortDataTemp.length - 1 - k];
-            i = rightPivotStart;
-            j = rightPivotStart + 1;
-            k++;
-          } else {
-            pivot = sortDataTemp[i];
-            i = -1;
-            j = 0;
-          }
-        }
-      }, 100);
-    }*/
   }, [runSort]);
 
   
@@ -526,7 +472,10 @@ function App() {
   }
 
   function partialSortReset() {
-    //TODO
+    setSortFound(false);
+    setFullSortData([]);
+    setSortFinished(false);
+    setRunSort("");
   }
 
   // Refactoring navbar into a separate component is more difficult, as it has a bunch of setstates
@@ -607,17 +556,17 @@ function App() {
                       </li>
                       <div className="divider"/>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Quick sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
+                          <div className="dropdown-link" onClick={function() {partialSortReset(); setAlgoOrDatastruct("Quick sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); }}>
                               Quick sort
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Merge sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
+                          <div className="dropdown-link" onClick={function() {partialSortReset(); setAlgoOrDatastruct("Merge sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
                               Merge sort
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("Bubble sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
+                          <div className="dropdown-link" onClick={function() {partialSortReset();setAlgoOrDatastruct("Bubble sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); partialSortReset(); }}>
                               Bubble sort
                           </div>
                       </li>
