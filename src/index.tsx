@@ -359,9 +359,9 @@ function App() {
   function sortComponents() {
     return (
       <>
-        <div className="slider-text">Amount of entries</div>
+        <div className="slider-text" style={{zIndex: -1}}>Amount of entries</div>
         <Styles opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
-          <div className="value">{sliderValue}</div>
+          <div className="value" style={{zIndex: -1}}>{sliderValue}</div>
           <input type="range" min={2} max={(Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} onInput={() => partialSortReset()} />
         </Styles>
         <button className={'btn-sort'} onClick={() => setRunSort(algoOrDatastruct)}>
