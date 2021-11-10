@@ -8,15 +8,16 @@ import {BFS} from './SearchAlgorithms/BFS';
 import {DFS} from './SearchAlgorithms/DFS';
 import {GBFS} from './SearchAlgorithms/GBFS';
 import {AStar} from './SearchAlgorithms/AStar';
-import {mergeSort} from './MergeAlgorithms/mergesort';
-import {quickSort} from './MergeAlgorithms/quicksort';
-import {bubbleSort} from './MergeAlgorithms/bubblesort';
+import {linearSearch} from './AlgoSearchAlgorithms/linearsearch';
+import {mergeSort} from './SortAlgorithms/mergesort';
+import {quickSort} from './SortAlgorithms/quicksort';
+import {bubbleSort} from './SortAlgorithms/bubblesort';
 import {getFullDataSearch} from './SearchAlgorithms/helperfunctions';
 import {legend} from './components/legend';
 import {footer} from './components/footer';
 import {pickTargets, drawStartAndGoal, drawSearch, drawPath, drawWalls, drawWeights} from './components/drawsearches';
 import {drawSortData} from './components/drawsorts';
-import {drawAlgoSearchData} from './components/drawalgosearches';
+import {drawAlgoSearchNumbers, drawAlgoSearch} from './components/drawalgosearches';
 
 interface props {
   opacity: number;
@@ -85,9 +86,6 @@ function App() {
   const [walls, setWalls] = useState<number[][]>([]);
   const [weights, setWeights] = useState<number[][]>([]);
   const [algoSelected, setAlgoSelected] = useState(false);
-  const [algoSearchSelected, setAlgoSearchSelected] = useState(false);
-  const [algoSortSelected, setAlgoSortSelected] = useState(false);
-  const [datastructureSelected, setDatastructureSelected] = useState(false);
   const [algoSelectedOption, setAlgoSelectedOption] = useState("Select nodes");
   const [click, setClick] = useState(false);
   const [dropdownAlgorithms, setDropdownAlgorithms] = useState(false);
@@ -98,11 +96,15 @@ function App() {
   const [sortData, setSortData] = useState<number[][]>([]);
   const [runSort, setRunSort] = useState("");
   const [sortFinished, setSortFinished] = useState(false);
-  const [searchFound, setSearchFound] = useState(false);
-  const [searchFinished, setSearchFinished] = useState(false);
-  const [fullSearchAlgoData, setFullSearchAlgoData] = useState<number[][][]>([]);
-  const [runSearch, setRunSearch] = useState("");
-  const [searchData, setSearchData] = useState<number[][]>([]);
+  const [searchNumbers, setSearchNumbers] = useState<number[]>([]);
+  const [screenWidthHeight, setScreenWidthHeight] = useState<number[]>([0, 0]);
+  const [searchTarget, setSearchTarget] = useState<number[]>([]);
+  const [searchTargetSelected, setSearchTargetSelected] = useState(false);
+  const [searchAlgoFound, setSearchAlgoFound] = useState(false);
+  const [fullAlgoSearchData, setFullAlgoSearchData] = useState<number[][]>([]);
+  const [algoSearchData, setAlgoSearchData] = useState<number[]>([]);
+  const [algoSearchTarget, setAlgoSearchTarget] = useState<number>(0);
+  const [isTarget, setIsTarget] = useState(false);
 
   const onMouseEnterDropdownAlgorithms = () => {
       if (window.innerWidth < 960) {
@@ -151,13 +153,44 @@ function App() {
     
   }
 
+  function resetMouseListeners() {
+    onmousedown = function() {return;}
+    onmouseup = function() {return;}
+    onmousemove = function() {return;}
+  }
+
+  if (dropdownPickedSearch && runSort.includes("search") && !searchTargetSelected) {
+    onmousedown = function() {return;}
+    onmouseup = function() {return;}
+    onmousemove = function() {return;}
+    onmousemove = function(e) {
+      if (e.clientY >= 80 && e.clientY <= 60 + (sliderValue / Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20
+      || (e.clientY <= 80 + (sliderValue / Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20
+        && e.clientX <= (sliderValue % Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20)) {
+        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20]);
+        onmousedown = function(e2) {
+          if (e2.clientY >= 80) {
+            setSearchTarget([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)]);
+            setAlgoSearchTarget(Math.floor(e.clientX / 20) + ((Math.floor(e.clientY / 20) - 4) * Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)));
+            setSearchTargetSelected(true);
+            resetMouseListeners();
+            return;
+          }
+        }
+      }
+      else {
+        onmousedown = function() {return;}
+      }
+    }
+  }
+
   if (algoSelectedOption === "Add walls") {
     onmousedown = function() {return;}
     onmouseup = function() {return;}
     onmousemove = function() {return;}
     onmousemove = function(e) {
       if (e.clientY >= 80) {
-        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20])
+        setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20]);
         onmousedown = function(e2) {
           if (e2.clientY >= 80) {
             var add: boolean = true;
@@ -364,15 +397,20 @@ function App() {
   }, [pathFound, fullSearchData, path]);
 
   function sortComponents(dropdownPickedSort: boolean) {
+    var w: number = Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20);
+    var h: number = Math.floor((Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)) / 20) - 4;
+    if (screenWidthHeight[0] !== w && screenWidthHeight[1] !== h) {
+      setScreenWidthHeight([w,h]);
+    }
     return (
       <>
         <div className="slider-text" style={{zIndex: -1}}>Amount of entries</div>
         <Styles opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
           <div className="value" style={{zIndex: -1}}>{sliderValue}</div>
-          <input type="range" min={2} max={(Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} onInput={() => partialSortReset()} />
+          <input type="range" min={2} max={dropdownPickedSort ? (Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10 : w*h} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} onInput={() => dropdownPickedSort ? partialSortReset() : partialSearchReset()} />
         </Styles>
         <button className={'btn-sort'} onClick={() => setRunSort(algoOrDatastruct)}>
-          {dropdownPickedSort ? "Run sort" : "Run search"}
+          {dropdownPickedSort ? "Run sort" : "Pick target"}
         </button>
       </>
     );
@@ -394,6 +432,43 @@ function App() {
   }, [sortFound]);
 
   useEffect(() => {
+    if (searchTargetSelected) {
+      var fullAlgoSearchData: number[][] = [];
+      if (runSort === "Linear search selected") {
+        //TODO
+        fullAlgoSearchData = linearSearch(searchNumbers, algoSearchTarget, 1, []);
+        setFullAlgoSearchData(fullAlgoSearchData);
+        setSearchAlgoFound(true);
+      }
+      if (runSort === "Binary search selected") {
+        //TODO
+        setFullAlgoSearchData([]);
+        setSearchAlgoFound(true);
+      }
+      if (runSort === "Jump search selected") {
+        //TODO
+        setFullAlgoSearchData([]);
+        setSearchAlgoFound(true);
+      }
+    }
+  }, [searchTargetSelected]);
+
+  useEffect(() => {
+    if (searchAlgoFound) {
+      var i: number = 0;
+      const interval = setInterval(() => {
+        if (i >= fullAlgoSearchData.length) {
+          setIsTarget(true);
+          clearInterval(interval);
+          return;
+        }
+        setAlgoSearchData(fullAlgoSearchData[i]);
+        i++;
+      }, 2000 / fullAlgoSearchData.length);
+    }
+  }, [searchAlgoFound]);
+
+  useEffect(() => {
     if (algoOrDatastruct.includes("sort")) {
       var h: number = Math.floor((Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 19.99) / 20) - 3;
       var builtSortData: number[][] = [];
@@ -404,12 +479,11 @@ function App() {
       setSortData(builtSortData);
     }
     if (algoOrDatastruct.includes("search")) {
-      var builtSearchData: number[][] = [];
-      for (var x = 0; x < sliderValue; x++) {
-        var y: number = Math.floor(Math.random() * (sliderValue - 1 + 1) + 1);
-        builtSearchData.push([x, y]);
+      var searchNumbersTemp: number[] = [];
+      for (var i = 0; i < sliderValue; i++) {
+        searchNumbersTemp.push(i);
       }
-      setSearchData(builtSearchData);
+      setSearchNumbers(searchNumbersTemp);
     }
   }, [sliderValue]);
 
@@ -454,7 +528,14 @@ function App() {
     }
   }, [runSort]);
 
-  
+  function defineSearchNumbers() {
+    for (var i = 0; i < sliderValue; i++) {
+      searchNumbers.push(i);
+    }
+    setSearchNumbers(searchNumbers);
+  }
+
+
 
   function reset() {
     setDropdownPicked(false);
@@ -495,10 +576,16 @@ function App() {
   }
 
   function partialSearchReset() {
-    setSearchFound(false);
-    setFullSearchAlgoData([]);
-    setSearchFinished(false);
-    setRunSearch("");
+    setSearchNumbers([]);
+    setScreenWidthHeight([0, 0]);
+    setSearchTarget([]);
+    setSearchTargetSelected(false);
+    setSearchAlgoFound(false);
+    setFullAlgoSearchData([]);
+    setAlgoSearchData([]);
+    setAlgoSearchTarget(0);
+    setIsTarget(false);
+    setRunSort("");
   }
 
   function partialSortReset() {
@@ -570,33 +657,33 @@ function App() {
                   {dropdownSearchAlgorithms && 
                   <ul className='dropdown-menu'>
                       <li>
-                          <div className="dropdown-link" onClick={function() {partialSearchReset(); setAlgoOrDatastruct("Linear search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); setAlgoSearchSelected(true); }}>
+                          <div className="dropdown-link" onClick={function() {defineSearchNumbers(); partialSearchReset(); setAlgoOrDatastruct("Linear search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); }}>
                               Linear search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {partialSearchReset(); setAlgoOrDatastruct("Binary search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); setAlgoSearchSelected(true); }}>
+                          <div className="dropdown-link" onClick={function() {defineSearchNumbers(); partialSearchReset(); setAlgoOrDatastruct("Binary search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); }}>
                               Binary search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {partialSearchReset(); setAlgoOrDatastruct("Jump search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); setAlgoSearchSelected(true); }}>
+                          <div className="dropdown-link" onClick={function() {defineSearchNumbers(); partialSearchReset(); setAlgoOrDatastruct("Jump search selected"); setDropdownPickedSort(false); setDropdownPicked(false); setDropdownPickedSearch(true); }}>
                               Jump search
                           </div>
                       </li>
                       <div className="divider"/>
                       <li>
-                          <div className="dropdown-link" onClick={function() {partialSortReset(); setAlgoOrDatastruct("Quick sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true); }}>
+                          <div className="dropdown-link" onClick={function() {partialSortReset(); setAlgoOrDatastruct("Quick sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); }}>
                               Quick sort
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {partialSortReset(); setAlgoOrDatastruct("Merge sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true);}}>
+                          <div className="dropdown-link" onClick={function() {partialSortReset(); setAlgoOrDatastruct("Merge sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); }}>
                               Merge sort
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {partialSortReset();setAlgoOrDatastruct("Bubble sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); setAlgoSortSelected(true);}}>
+                          <div className="dropdown-link" onClick={function() {partialSortReset();setAlgoOrDatastruct("Bubble sort selected"); setDropdownPicked(false); setDropdownPickedSearch(false); setDropdownPickedSort(true); }}>
                               Bubble sort
                           </div>
                       </li>
@@ -635,7 +722,10 @@ function App() {
       {drawWeights(weights, true)}
       {(dropdownPickedSort || dropdownPickedSearch) && sortComponents(dropdownPickedSort)}
       {dropdownPickedSort && drawSortData(sortData, sortFinished)}
-      {dropdownPickedSearch && drawAlgoSearchData(searchData, searchFinished)}
+      {dropdownPickedSearch && drawAlgoSearchNumbers(searchNumbers, screenWidthHeight[0])}
+      {dropdownPickedSearch && !searchTargetSelected && pickTargets(hoverBox, false, 0, "Select nodes")}
+      {searchAlgoFound && drawAlgoSearch(algoSearchData, screenWidthHeight[0])}
+      {searchTargetSelected && drawStartAndGoal(searchTarget, false, isTarget ? -1 : -2)}
       {!goalSelected && dropdownPicked && pickTargets(hoverBox, startSelected, colorOfRange, algoSelectedOption)}
       {startSelected && drawStartAndGoal(start, false, 0)}
       {goalSelected && drawStartAndGoal(goal, true, goalColor)}
