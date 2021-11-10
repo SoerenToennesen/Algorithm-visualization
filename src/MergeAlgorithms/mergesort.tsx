@@ -46,7 +46,6 @@ export function mergeSort(sortData: number[][], sortDataBuilder: number[][]): nu
         }
     }
     sortDataBuilderTemp.push(toBuild);
-    console.log(sortDataBuilderTemp);
     return mergeSort(sortDataTemp, sortDataBuilderTemp);
 }
 
