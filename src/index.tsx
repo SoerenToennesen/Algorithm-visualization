@@ -555,7 +555,7 @@ function App() {
       setFullSortData(fullSortDataTemp3);
       setSortFound(true);
     }
-  }, [runSort, sortData]);
+  }, [runSort]);
 
   function defineSearchNumbers() {
     for (var i = 0; i < sliderValue; i++) {
@@ -607,6 +607,39 @@ function App() {
     setPathFound(false);
     setColorOfRange(0);
     resetMouseListeners();
+
+    setSearchNumbers([]);
+    setScreenWidthHeight([0, 0]);
+    setSearchTarget([]);
+    setSearchTargetSelected(false);
+    setSearchAlgoFound(false);
+    setFullAlgoSearchData([]);
+    setAlgoSearchData([]);
+    setAlgoSearchTarget(0);
+    setIsTarget(false);
+    setRunSort("");
+    setHoverBox([]);
+    setJumpValue("5");
+    setSliderValue(50);
+    resetMouseListeners();
+    setGoal([]);
+    setStart([]);
+    setWalls([]);
+    setWeights([]);
+    setStartSelected(false);
+    setGoalSelected(false);
+
+    setSortFound(false);
+    setFullSortData([]);
+    setSortFinished(false);
+    setRunSort("");
+    resetMouseListeners();
+    setGoal([]);
+    setStart([]);
+    setWalls([]);
+    setWeights([]);
+    setStartSelected(false);
+    setGoalSelected(false);
   }
 
   function partialSearchReset() {
@@ -621,6 +654,34 @@ function App() {
     setIsTarget(false);
     setRunSort("");
     setHoverBox([]);
+    setJumpValue("5");
+    setSliderValue(50);
+    resetMouseListeners();
+    setGoal([]);
+    setStart([]);
+    setWalls([]);
+    setWeights([]);
+    setStartSelected(false);
+    setGoalSelected(false);
+
+    setStartSelected(false);
+    setGoalSelected(false);
+    setStart([]);
+    setGoal([]);
+    setFullSearchData([]);
+    setPositions([]);
+    setPositionsPath([]);
+    setAlreadyDrawn([]);
+    setAlreadyDrawnPath([]);
+    setPath([]);
+    setPathFound(false);
+    setColorOfRange(0);
+    resetMouseListeners();
+
+    setSortFound(false);
+    setFullSortData([]);
+    setSortFinished(false);
+    setRunSort("");
     resetMouseListeners();
     setGoal([]);
     setStart([]);
@@ -635,6 +696,41 @@ function App() {
     setFullSortData([]);
     setSortFinished(false);
     setRunSort("");
+    resetMouseListeners();
+    setGoal([]);
+    setStart([]);
+    setWalls([]);
+    setWeights([]);
+    setStartSelected(false);
+    setGoalSelected(false);
+
+    setStartSelected(false);
+    setGoalSelected(false);
+    setStart([]);
+    setGoal([]);
+    setFullSearchData([]);
+    setPositions([]);
+    setPositionsPath([]);
+    setAlreadyDrawn([]);
+    setAlreadyDrawnPath([]);
+    setPath([]);
+    setPathFound(false);
+    setColorOfRange(0);
+    resetMouseListeners();
+
+    setSearchNumbers([]);
+    setScreenWidthHeight([0, 0]);
+    setSearchTarget([]);
+    setSearchTargetSelected(false);
+    setSearchAlgoFound(false);
+    setFullAlgoSearchData([]);
+    setAlgoSearchData([]);
+    setAlgoSearchTarget(0);
+    setIsTarget(false);
+    setRunSort("");
+    setHoverBox([]);
+    setJumpValue("5");
+    setSliderValue(50);
     resetMouseListeners();
     setGoal([]);
     setStart([]);
