@@ -86,7 +86,6 @@ function App() {
   const [drawingDone, setDrawingDone] = useState(true);
   const [walls, setWalls] = useState<number[][]>([]);
   const [weights, setWeights] = useState<number[][]>([]);
-  const [algoSelected, setAlgoSelected] = useState(false);
   const [algoSelectedOption, setAlgoSelectedOption] = useState("Select nodes");
   const [click, setClick] = useState(false);
   const [dropdownAlgorithms, setDropdownAlgorithms] = useState(false);
@@ -165,7 +164,7 @@ function App() {
     onmouseup = function() {return;}
     onmousemove = function() {return;}
     onmousemove = function(e) {
-      if (e.clientY >= 80 && e.clientY <= 60 + (sliderValue / Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20
+      if ((e.clientY >= 80 && e.clientY <= 60 + (sliderValue / Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20)
       || (e.clientY <= 80 + (sliderValue / Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20
         && e.clientX <= (sliderValue % Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)) / 20)) * 20)) {
         setHoverBox([Math.floor(e.clientY / 20) * 20, Math.floor(e.clientX / 20) * 20]);
@@ -272,10 +271,11 @@ function App() {
       onmousemove = function() {return;}
       onmouseup = function(e) {
         if (algoSelectedOption !== "Select nodes") return;
+        var add: boolean = true;
+        var i: number;
         if (!startSelected && start.length === 0) {
           if (e.clientY >= 80) {
-            var add: boolean = true;
-            for (var i = 0; i < walls.length; i++) {
+            for (i = 0; i < walls.length; i++) {
               if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
                 add = false;
                 break;
@@ -289,8 +289,7 @@ function App() {
         }
         else if (!goalSelected && goal.length === 0) {
           if (e.clientY >= 80) {
-            var add: boolean = true;
-            for (var i = 0; i < walls.length; i++) {
+            for (i = 0; i < walls.length; i++) {
               if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
                 add = false;
                 break;
@@ -448,7 +447,7 @@ function App() {
         i++;
       }, 5000 / fullSortData.length);
     }
-  }, [sortFound]);
+  }, [sortFound, fullSortData]);
 
   useEffect(() => {
     if (searchTargetSelected) {
@@ -460,7 +459,6 @@ function App() {
       }
       if (runSort === "Binary search selected") {
         fullAlgoSearchData = binarySearch(searchNumbers, algoSearchTarget, 0, searchNumbers.length - 1, []);
-        console.log(fullAlgoSearchData);
         setFullAlgoSearchData(fullAlgoSearchData);
         setSearchAlgoFound(true);
       }
@@ -470,7 +468,7 @@ function App() {
         setSearchAlgoFound(true);
       }
     }
-  }, [searchTargetSelected]);
+  }, [searchTargetSelected, algoSearchTarget, runSort, searchNumbers]);
 
   useEffect(() => {
     if (searchAlgoFound) {
@@ -485,7 +483,7 @@ function App() {
         i++;
       }, 2000 / fullAlgoSearchData.length);
     }
-  }, [searchAlgoFound]);
+  }, [searchAlgoFound, fullAlgoSearchData]);
 
   useEffect(() => {
     if (algoOrDatastruct.includes("sort")) {
@@ -504,13 +502,14 @@ function App() {
       }
       setSearchNumbers(searchNumbersTemp);
     }
-  }, [sliderValue]);
+  }, [sliderValue, algoOrDatastruct]);
 
   // Sort algorithm also happens here
   useEffect(() => {
     var sortDataWithoutIndex: number[] = [];
+    var i: number;
     if (runSort === "Quick sort selected") {
-      for (var i = 0; i < sortData.length; i++) {
+      for (i = 0; i < sortData.length; i++) {
         sortDataWithoutIndex.push(sortData[i][1]);
       }
       var fullSortDataTemp: number[][] = quickSort([], sortDataWithoutIndex, 0, sortDataWithoutIndex.length - 1);
@@ -529,7 +528,7 @@ function App() {
     var sortDataWithoutIndex2: number[][] = [];
 
     if (runSort === "Merge sort selected") {
-      for (var i = 0; i < sortData.length; i++) {
+      for (i = 0; i < sortData.length; i++) {
         sortDataWithoutIndex2.push([sortData[i][1]]);
       }
       var fullSortDataTemp2: number[][][] = mergeSort(sortDataWithoutIndex2, []);
@@ -538,7 +537,7 @@ function App() {
     }
 
     if (runSort === "Bubble sort selected") {
-      for (var i = 0; i < sortData.length; i++) {
+      for (i = 0; i < sortData.length; i++) {
         sortDataWithoutIndex.push(sortData[i][1]);
       }
       var fullSortDataTemp3: number[][][] = bubbleSort(sortDataWithoutIndex, [], sortDataWithoutIndex.length - 1);
@@ -561,7 +560,6 @@ function App() {
     setDropdownPickedSort(false);
     setDropdownPickedSearch(false);
     setAlgoOrDatastruct("Nothing selected");
-    setAlgoSelected(false);
     setStartSelected(false);
     setGoalSelected(false);
     setStart([]);
@@ -577,6 +575,11 @@ function App() {
     setAlgoSelectedOption("Select nodes");
     setWalls([]);
     setWeights([]);
+
+    partialSearchReset();
+    partialReset();
+    partialSortReset();
+    resetMouseListeners();
   }
 
   function partialReset() {
@@ -592,6 +595,7 @@ function App() {
     setPath([]);
     setPathFound(false);
     setColorOfRange(0);
+    resetMouseListeners();
   }
 
   function partialSearchReset() {
@@ -605,6 +609,14 @@ function App() {
     setAlgoSearchTarget(0);
     setIsTarget(false);
     setRunSort("");
+    setHoverBox([]);
+    resetMouseListeners();
+    setGoal([]);
+    setStart([]);
+    setWalls([]);
+    setWeights([]);
+    setStartSelected(false);
+    setGoalSelected(false);
   }
 
   function partialSortReset() {
@@ -612,7 +624,16 @@ function App() {
     setFullSortData([]);
     setSortFinished(false);
     setRunSort("");
+    resetMouseListeners();
+    setGoal([]);
+    setStart([]);
+    setWalls([]);
+    setWeights([]);
+    setStartSelected(false);
+    setGoalSelected(false);
   }
+
+  
 
   // Refactoring navbar into a separate component is more difficult, as it has a bunch of setstates
   return (
@@ -628,7 +649,7 @@ function App() {
               <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>
-              {algoSelected &&
+              {algoOrDatastruct.includes("algorithm") &&
               <li className='nav-item'>
                       <div className={drawingDone ? (algoSelectedOption !== "Select nodes" ? 'nav-links' : 'nav-li-unclickable') : "nav-li-unclick-2"} onClick={drawingDone ? function() {setClick(false); setAlgoSelectedOption("Select nodes"); } : function() {}}>
                           Select nodes
@@ -647,22 +668,22 @@ function App() {
                   {dropdownAlgorithms && 
                   <ul className='dropdown-menu'>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("BFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("BFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Breadth-First Search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("DFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("DFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Depth-First Search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("GBFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("GBFS algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               Greedy Best-First Search
                           </div>
                       </li>
                       <li>
-                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("A* algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelected(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
+                          <div className="dropdown-link" onClick={function() {setAlgoOrDatastruct("A* algorithm selected"); setDropdownPickedSort(false); setDropdownPickedSearch(false); setDropdownPicked(true); setAlgoSelectedOption("Select nodes"); partialReset(); }}>
                               A* Search
                           </div>
                       </li>

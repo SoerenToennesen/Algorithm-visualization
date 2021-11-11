@@ -141,7 +141,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: 1.0rem;
 }
 
 .navbar-logo {
@@ -150,15 +150,8 @@
   margin-left: 20px;
   cursor: auto;
   text-decoration: none;
-  font-size: 2rem;
+  font-size: 1.5rem;
   white-space: nowrap;
-}
-
-
-
-.fa-firstdraft {
-  margin-left: 0.5rem;
-  font-size: 1.6rem;
 }
 
 .nav-menu {
@@ -335,10 +328,10 @@
   line-height: 40px;
   margin-left: 80px;
   height: 40px;
-  width: 320px;
+  width: 200px;
   cursor: auto;
   text-decoration: none;
-  font-size: 1.0rem;
+  font-size: 0.8rem;
   display: inline-block;
   white-space: nowrap;
   animation: scaleOnly 0.8s;
