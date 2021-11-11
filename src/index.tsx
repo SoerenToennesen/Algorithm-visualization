@@ -10,6 +10,7 @@ import {GBFS} from './SearchAlgorithms/GBFS';
 import {AStar} from './SearchAlgorithms/AStar';
 import {linearSearch} from './AlgoSearchAlgorithms/linearsearch';
 import {binarySearch} from './AlgoSearchAlgorithms/binarysearch';
+import {jumpSearch} from './AlgoSearchAlgorithms/jumpsearch';
 import {mergeSort} from './SortAlgorithms/mergesort';
 import {quickSort} from './SortAlgorithms/quicksort';
 import {bubbleSort} from './SortAlgorithms/bubblesort';
@@ -23,6 +24,7 @@ import {drawAlgoSearchNumbers, drawAlgoSearch} from './components/drawalgosearch
 interface props {
   opacity: number;
   color: string;
+  jump: boolean;
 }
 
 const Styles = styled.div<props>`
@@ -30,7 +32,7 @@ const Styles = styled.div<props>`
   position: fixed;
   align-items: center;
   color: rgb(125,194,175);
-  margin-top: 50px;
+  margin-top: ${(props) => props.jump ? "100px" : "50px"};
   right: 30px;
 
   .value {
@@ -93,6 +95,7 @@ function App() {
   const [dropdownSearchAlgorithms, setDropdownSearchAlgorithms] = useState(false);
   const [algoOrDatastruct, setAlgoOrDatastruct] = useState<string>("Nothing selected");
   const [sliderValue, setSliderValue] = useState<number>(50);
+  const [jumpValue, setJumpValue] = useState<string>("5");
   const [sortData, setSortData] = useState<number[][]>([]);
   const [runSort, setRunSort] = useState("");
   const [sortFinished, setSortFinished] = useState(false);
@@ -423,11 +426,19 @@ function App() {
     return (
       <>
         <div className="slider-text" style={{zIndex: -1}}>Amount of entries</div>
-        <Styles opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
+        <Styles jump={false} opacity={0.8} color={`rgb(${sliderValue*1.5},${201-sliderValue*1.5},0)`}>
           <div className="value" style={{zIndex: -1}}>{sliderValue}</div>
           <input type="range" min={2} max={dropdownPickedSort ? (Math.floor((Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 19.99) / 20) + 1) * 1 * 10 / 10 : w*h} value={sliderValue} className="slider" onChange={(e: any) => setSliderValue(e.target.value)} onInput={() => dropdownPickedSort ? partialSortReset() : partialSearchReset()} />
         </Styles>
-        <button className={'btn-sort'} onClick={() => setRunSort(algoOrDatastruct)}>
+        {algoOrDatastruct === "Jump search selected" &&
+        <div>
+          <div className="slider-text-jump" style={{zIndex: -1}}>Jump step-count</div>
+          <Styles jump={true} opacity={0.8} color={`rgb(${parseInt(jumpValue)*1.5},${201-parseInt(jumpValue)*1.5},0)`}>
+            <div className="value" style={{zIndex: -1}}>{jumpValue}</div>
+            <input type="range" min={1} max={sliderValue} value={jumpValue} className="slider" onChange={(e: any) => setJumpValue(e.target.value)} />
+          </Styles>
+        </div>}
+        <button className={algoOrDatastruct === "Jump search selected" ? 'btn-jump' : 'btn-sort'} onClick={() => setRunSort(algoOrDatastruct)}>
           {dropdownPickedSort ? "Run sort" : "Pick target"}
         </button>
       </>
@@ -463,12 +474,12 @@ function App() {
         setSearchAlgoFound(true);
       }
       if (runSort === "Jump search selected") {
-        //TODO
-        setFullAlgoSearchData([]);
+        fullAlgoSearchData = jumpSearch(searchNumbers, algoSearchTarget, 1, parseInt(jumpValue), false, -1, 1, []);
+        setFullAlgoSearchData(fullAlgoSearchData);
         setSearchAlgoFound(true);
       }
     }
-  }, [searchTargetSelected, algoSearchTarget, runSort, searchNumbers]);
+  }, [searchTargetSelected, algoSearchTarget, runSort, searchNumbers, jumpValue]);
 
   useEffect(() => {
     if (searchAlgoFound) {

@@ -24,6 +24,14 @@
   color: var(--secondary);
 }
 
+.slider-text-jump {
+  position: absolute;
+  font-size: 25px;
+  top: 160px;
+  right: 95px;
+  color: var(--secondary);
+}
+
 .btn {
   padding: 8px 20px;
   border-radius: 4px;
@@ -41,6 +49,23 @@
 .btn-sort {
   position: absolute;
   top: 170px;
+  right: 105px;
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin-right: 20px;
+  outline: none;
+  border: none;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  background-color: var(--third);
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+.btn-jump {
+  position: absolute;
+  top: 220px;
   right: 105px;
   padding: 8px 20px;
   border-radius: 4px;
