@@ -9,6 +9,7 @@ import {DFS} from './SearchAlgorithms/DFS';
 import {GBFS} from './SearchAlgorithms/GBFS';
 import {AStar} from './SearchAlgorithms/AStar';
 import {linearSearch} from './AlgoSearchAlgorithms/linearsearch';
+import {binarySearch} from './AlgoSearchAlgorithms/binarysearch';
 import {mergeSort} from './SortAlgorithms/mergesort';
 import {quickSort} from './SortAlgorithms/quicksort';
 import {bubbleSort} from './SortAlgorithms/bubblesort';
@@ -453,14 +454,14 @@ function App() {
     if (searchTargetSelected) {
       var fullAlgoSearchData: number[][] = [];
       if (runSort === "Linear search selected") {
-        //TODO
         fullAlgoSearchData = linearSearch(searchNumbers, algoSearchTarget, 1, []);
         setFullAlgoSearchData(fullAlgoSearchData);
         setSearchAlgoFound(true);
       }
       if (runSort === "Binary search selected") {
-        //TODO
-        setFullAlgoSearchData([]);
+        fullAlgoSearchData = binarySearch(searchNumbers, algoSearchTarget, 0, searchNumbers.length - 1, []);
+        console.log(fullAlgoSearchData);
+        setFullAlgoSearchData(fullAlgoSearchData);
         setSearchAlgoFound(true);
       }
       if (runSort === "Jump search selected") {
@@ -544,7 +545,7 @@ function App() {
       setFullSortData(fullSortDataTemp3);
       setSortFound(true);
     }
-  }, [runSort]);
+  }, [runSort, sortData]);
 
   function defineSearchNumbers() {
     for (var i = 0; i < sliderValue; i++) {
@@ -715,7 +716,7 @@ function App() {
                   {dropdownDatastructures && 
                   <ul className='dropdown-menu'>
                       <li>
-                          <div className="dropdown-link">
+                          <div className="dropdown-link" onClick={function() { setDropdownPickedDatastructures(!dropdownPickedDatastructures); }}>
                               Nothing implemented yet
                           </div>
                       </li>

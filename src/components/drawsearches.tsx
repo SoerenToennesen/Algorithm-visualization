@@ -20,6 +20,7 @@ export function pickTargets(hoverBox: number[], startSelected: boolean, colorOfR
 }
   
 export function drawStartAndGoal(startOrGoal: number[], isGoal: boolean, colorOfRange: number) {
+  console.log(colorOfRange);
   return (
         <div style={{
           position: "absolute",
