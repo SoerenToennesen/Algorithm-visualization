@@ -273,17 +273,35 @@ function App() {
         if (algoSelectedOption !== "Select nodes") return;
         if (!startSelected && start.length === 0) {
           if (e.clientY >= 80) {
-            setStart([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)])
-            setStartSelected(true);
+            var add: boolean = true;
+            for (var i = 0; i < walls.length; i++) {
+              if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                add = false;
+                break;
+              }
+            }
+            if (add) {
+              setStart([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)])
+              setStartSelected(true);
+            }
           }
         }
         else if (!goalSelected && goal.length === 0) {
           if (e.clientY >= 80) {
-            if (colorOfRange !== 2) {
-              var goalColorTemp = colorOfRange;
-              setGoalColor(goalColorTemp);
-              setGoal([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)])
-              setGoalSelected(true);
+            var add: boolean = true;
+            for (var i = 0; i < walls.length; i++) {
+              if (walls[i].toString() === [Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)].toString()) {
+                add = false;
+                break;
+              }
+            }
+            if (add) {
+              if (colorOfRange !== 2) {
+                var goalColorTemp = colorOfRange;
+                setGoalColor(goalColorTemp);
+                setGoal([Math.floor(e.clientX / 20), Math.floor(e.clientY / 20)])
+                setGoalSelected(true);
+              }
             }
           }
         }
