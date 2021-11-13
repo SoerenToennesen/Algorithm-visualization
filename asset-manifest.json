@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/Algorithm-visualization/static/css/main.68f40055.chunk.css",
-    "main.js": "/Algorithm-visualization/static/js/main.3b48d93a.chunk.js",
-    "main.js.map": "/Algorithm-visualization/static/js/main.3b48d93a.chunk.js.map",
+    "main.css": "/Algorithm-visualization/static/css/main.4b3095f2.chunk.css",
+    "main.js": "/Algorithm-visualization/static/js/main.a5d5f9ab.chunk.js",
+    "main.js.map": "/Algorithm-visualization/static/js/main.a5d5f9ab.chunk.js.map",
     "runtime-main.js": "/Algorithm-visualization/static/js/runtime-main.b1fed659.js",
     "runtime-main.js.map": "/Algorithm-visualization/static/js/runtime-main.b1fed659.js.map",
     "static/css/2.37599cf8.chunk.css": "/Algorithm-visualization/static/css/2.37599cf8.chunk.css",
@@ -10,7 +10,7 @@
     "static/js/2.48444b85.chunk.js.map": "/Algorithm-visualization/static/js/2.48444b85.chunk.js.map",
     "index.html": "/Algorithm-visualization/index.html",
     "static/css/2.37599cf8.chunk.css.map": "/Algorithm-visualization/static/css/2.37599cf8.chunk.css.map",
-    "static/css/main.68f40055.chunk.css.map": "/Algorithm-visualization/static/css/main.68f40055.chunk.css.map",
+    "static/css/main.4b3095f2.chunk.css.map": "/Algorithm-visualization/static/css/main.4b3095f2.chunk.css.map",
     "static/js/2.48444b85.chunk.js.LICENSE.txt": "/Algorithm-visualization/static/js/2.48444b85.chunk.js.LICENSE.txt",
     "static/media/font-awesome.min.css": "/Algorithm-visualization/static/media/fontawesome-webfont.f691f37e.woff"
   },
@@ -18,7 +18,7 @@
     "static/js/runtime-main.b1fed659.js",
     "static/css/2.37599cf8.chunk.css",
     "static/js/2.48444b85.chunk.js",
-    "static/css/main.68f40055.chunk.css",
-    "static/js/main.3b48d93a.chunk.js"
+    "static/css/main.4b3095f2.chunk.css",
+    "static/js/main.a5d5f9ab.chunk.js"
   ]
 }
