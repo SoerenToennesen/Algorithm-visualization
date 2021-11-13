@@ -442,6 +442,10 @@
   color: rgb(240,149,55);
   display: inline;
 }
+.legend-color6 {
+  color: rgb(50, 50, 50);
+  display: inline;
+}
 
 .todo-container {
   width: 5%;
@@ -513,6 +517,32 @@
   width: 90%;
   color: #fff;
   font-size: 1.6rem;
+  animation: wiggleOnly 3.0s infinite;
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.footer-in-small {
+  text-align: center;
+  line-height: 50px;
+  display: block;
+  width: 90%;
+  color: #fff;
+  font-size: 1.1rem;
+  animation: wiggleOnly 3.0s infinite;
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.footer-in-smaller {
+  text-align: center;
+  line-height: 50px;
+  display: block;
+  width: 90%;
+  color: #fff;
+  font-size: 0.55rem;
   animation: wiggleOnly 3.0s infinite;
   overflow: hidden; 
   text-overflow: ellipsis;

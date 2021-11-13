@@ -1,10 +1,25 @@
 
-export function legend(dropdownPicked: boolean, startSelected: boolean, goalSelected: boolean, colorOfRange: number, goalColor: number, algoSelectedOption: string, walls: number[][], weights: number[][]) {
+export function legend(dropdownPickedSort: boolean, sortFinished: boolean, searchAlgoFound: boolean, isTarget: boolean, dropdownPickedSearch: boolean, searchTargetSelected: boolean, dropdownPicked: boolean, startSelected: boolean, goalSelected: boolean, colorOfRange: number, goalColor: number, algoSelectedOption: string, walls: number[][], weights: number[][]) {
   return (
     <div className="legend-container">
       <div className="legend-title">
         Legend
       </div>
+      {dropdownPickedSort &&
+      <div className="legend-info">
+        <div className={sortFinished ? "legend-color2" : "legend-color1"}><i className='fas fa-square'/></div>
+          &nbsp;{sortFinished ? "Sorted entries" : "Shuffled entries"}
+      </div>}
+      {dropdownPickedSearch &&
+      <div className="legend-info">
+        <div className={isTarget ? "legend-color2" : "legend-color1"}><i className='fas fa-square'/></div>
+          &nbsp;{isTarget ? "Target found" : searchTargetSelected ? "Target" : "Select target"}
+      </div>}
+      {dropdownPickedSearch && searchAlgoFound &&
+      <div className="legend-info">
+        <div className="legend-color6"><i className='fas fa-square'/></div>
+          &nbsp;Sought nodes
+      </div>}
       {dropdownPicked && algoSelectedOption === "Add walls" &&
       <div className="legend-info">
         <div className="legend-colorm1"><i className='fas fa-square'/></div>

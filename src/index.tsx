@@ -152,10 +152,6 @@ function App() {
     }
   };
 
-  if (dropdownPickedSort) {
-    
-  }
-
   function resetMouseListeners() {
     onmousedown = function() {return;}
     onmouseup = function() {return;}
@@ -863,8 +859,8 @@ function App() {
               </button>
           </div>
       </nav>
-      {footer(dropdownPicked, startSelected, goalSelected, start, goal)}
-      {legend(dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption, walls, weights)}
+      {footer(sortFound, searchAlgoFound, algoOrDatastruct, dropdownPickedSearch, dropdownPickedSort, dropdownPicked, startSelected, goalSelected, start, goal)}
+      {legend(dropdownPickedSort, sortFinished, searchAlgoFound, isTarget, dropdownPickedSearch, searchTargetSelected, dropdownPicked, startSelected, goalSelected, colorOfRange, goalColor, algoSelectedOption, walls, weights)}
       {drawWalls(walls, true)}
       {drawWeights(weights, true)}
       {(dropdownPickedSort || dropdownPickedSearch) && sortComponents(dropdownPickedSort)}
